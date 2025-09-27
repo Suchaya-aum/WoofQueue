@@ -8,7 +8,7 @@ class Customer(models.Model):
     email = models.EmailField(null=False)
 
 class CustomerProfile(models.Model):
-    customer = models.OneToOneField(Customer, null=True, blank=True)
+    customer = models.OneToOneField(Customer, null=True, blank=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=150, null=False)
     last_name = models.CharField(max_length=200, null=False)
     phone = models.CharField(max_length=11, null=True, blank=True)
@@ -34,11 +34,11 @@ class HairType(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
 class Pet(models.Model):
-    owner = models.ForeignKey(Customer, null=False)
-    size = models.ForeignKey(Size, null=False)
-    hair_type = models.ForeignKey(HairType, null=False)
+    owner = models.ForeignKey(Customer, null=False, on_delete=models.CASCADE)
+    size = models.ForeignKey(Size, null=False, on_delete=models.CASCADE)
+    hair_type = models.ForeignKey(HairType, null=False, on_delete=models.CASCADE)
     pet_name = models.CharField(max_length=25, null=False)
-    behavior_note = models.CharField(null=True)
+    behavior_note = models.CharField(max_length=255, null=True)
 
 class Appointment(models.Model):
     class Status_Choices(models.TextChoices):
@@ -54,7 +54,7 @@ class Appointment(models.Model):
     appointment_time = models.DateTimeField()
     finish_time = models.DateTimeField()
     status = models.CharField(max_length=15, choices=Status_Choices, null=False)
-    service = models.ManytoManyField("app.Service")
+    service = models.ManyToManyField("app.Service")
 
     def __str__(self):
         return f"PET_ID : {self.pet_id} - APPOINTMENT DATE : {self.appointment_date}"
