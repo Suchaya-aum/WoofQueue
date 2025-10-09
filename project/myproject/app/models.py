@@ -95,4 +95,4 @@ class Staff_Profile(models.Model):
     phone = models.CharField(max_length=11, null=False)
 
     def __str__(self):
-        return f"ID: {self.staff_id} Staff Profile {self.first_name} {self.last_name} - Phone: {self.phone_number}"
+        return f"ID: {self.staff_id} Staff Profile {self.first_name} {self.last_name} - Phone: {self.phone}"
