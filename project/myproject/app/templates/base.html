@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        Title
+      {% endblock %}
+    </title>
+  </head>
+
+  <body>
+    {% block nav %}
+      nav
+    {% endblock %}
+
+    <section class="p-6 max-w-8xl mx-auto">
+      <article aria-label="Head Content">
+        {% block head %}
+          <h1>Head</h1>
+        {% endblock %}
+      </article>
+
+      <article aria-label="Body Content">
+        {% block content %}
+          Content
+        {% endblock %}
+      </article>
+    </section>
+    
+    {% block script %}
+    
+    {% endblock %}
+  </body>
+
+</html>

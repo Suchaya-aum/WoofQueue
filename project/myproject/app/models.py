@@ -86,7 +86,7 @@ class Staff(models.Model):
     email = models.CharField(max_length=150)
 
     def __str__(self):
-        return f"Staff {self.username} Email: {self.email}"
+        return f"Staff {self.username}"
 
 class Staff_Profile(models.Model):
     staff_id = models.OneToOneField(Staff, on_delete=models.CASCADE)

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+service
+{% endblock %}
+
+{% block head %}
+<p>Services</p>
+{% endblock %}
+
+{% block content %}
+<div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100">
+    <a href="{% url 'service_create' %}"><button>Add New Service</button></a>
+    <table class="min-w-full divide-y divide-orange-100">
+        <thead class="bg-orange-100 text-left text-sm font-semibold text-gray-700">
+            <tr>
+                <th class="px-4 py-3">Service Name</th>
+                <th class="px-4 py-3">Duration</th>
+                <th class="px-4 py-3">Price</th>
+                <th class="px-4 py-3">Service Provider</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 text-sm">
+            {% for service in service_list %}
+            <tr class="hover:bg-orange-50 transition">
+                <td class="px-4 py-3">{{ service.service_name }}</td>
+                <td class="px-4 py-3 font-medium">{{ service.duration }}</td>
+                <td class="px-4 py-3">{{ service.price }}</td>
+                <td class="px-4 py-3">{{ service.staff_id.staff_profile.first_name }}</td>
+                <td class="px-4 py-3">
+                    <a href="{% url 'service_update' service.id %}" title="Modify" class="cursor-pointer">
+                        <button>
+                            Edit
+                        </button>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center text-gray-400 px-4 py-6">No Service.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
