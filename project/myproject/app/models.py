@@ -86,10 +86,10 @@ class Staff(models.Model):
     email = models.CharField(max_length=150)
 
     def __str__(self):
-        return f"Staff {self.first_name} {self.last_name} - Email: {self.email} - Phone: {self.phone_number}"
+        return f"Staff {self.username} Email: {self.email}"
 
 class Staff_Profile(models.Model):
-    staff_id = models.ForeignKey("Staff", on_delete=models.CASCADE)
+    staff_id = models.OneToOneField(Staff, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=150, null=False)
     last_name = models.CharField(max_length=200, null=False)
     phone = models.CharField(max_length=11, null=False)
