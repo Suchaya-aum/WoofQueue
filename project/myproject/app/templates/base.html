@@ -10,23 +10,66 @@
         Title
       {% endblock %}
     </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .errorlist { color:#dc2626; margin-top:0.25rem; font-size:0.875rem; }
+    </style>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            container: {
+              center: true,
+              padding: '1rem',
+            }
+          }
+        }
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
   </head>
 
   <body>
     {% block nav %}
-      nav
+      <nav class="w-full border-b bg-white">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+          <a href="/" class="text-xl font-semibold">MySite</a>
+          <div class="flex items-center gap-4">
+            <a href="#" class="text-sm text-gray-600 hover:text-gray-900">Home</a>
+            <a href="#" class="text-sm text-gray-600 hover:text-gray-900">About</a>
+            <a href="#" class="text-sm text-gray-600 hover:text-gray-900">Contact</a>
+          </div>
+        </div>
+      </nav>
     {% endblock %}
 
-    <section class="p-6 max-w-8xl mx-auto">
-      <article aria-label="Head Content">
+    <section class="max-w-5xl mx-auto px-4 py-6">
+      <article aria-label="Head Content" class="mb-6">
         {% block head %}
-          <h1>Head</h1>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Head</h1>
+          <p class="text-gray-600 mt-1">This is a sample header area styled by Tailwind.</p>
         {% endblock %}
       </article>
 
-      <article aria-label="Body Content">
+      <article aria-label="Body Content" class="bg-white rounded-xl shadow p-5">
         {% block content %}
-          Content
+          <p class="text-gray-700">Content</p>
+          <button
+            class="mt-4 inline-flex items-center px-4 py-2 rounded-lg border
+                   bg-gray-900 text-white hover:bg-gray-800 active:scale-[.99]">
+            Example Button
+          </button>
         {% endblock %}
       </article>
     </section>

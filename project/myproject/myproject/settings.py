@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Add your apps here
     "app",
+    "authen",
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -133,3 +134,7 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/authen/'
+LOGIN_REDIRECT_URL = '/'           # ล็อกอินสำเร็จให้ไปหน้าไหน
+LOGOUT_REDIRECT_URL = '/'          # ล็อกเอาต์แล้วไปหน้าไหน
