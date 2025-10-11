@@ -32,7 +32,6 @@ class ServiceCreateView(View):
         if serviceform.is_valid():
             new_service = serviceform.save()
             
-            new_service.save()
             return redirect("service")
         return render(request, "create_service.html", {"serviceform": serviceform})
     
@@ -59,5 +58,9 @@ class ServiceUpdateView(View):
 class ServiceManagementView(View):
     def get(self, request):
         service_list = Service.objects.all()
-        print(service_list[0].staff_id.staff_profile.first_name)
         return render(request, "service.html", {"service_list": service_list})
+    
+class InvoiceView(View):
+    def get(self, request):
+        invoice_list = Service.objects.all()
+        return render(request, "invoice.html", {"invoice_list": invoice_list})

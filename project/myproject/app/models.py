@@ -34,7 +34,7 @@ class HairType(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
 class Pet(models.Model):
-    owner = models.ForeignKey(Customer, null=False, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomerProfile, null=False, on_delete=models.CASCADE)
     size = models.ForeignKey(Size, null=False, on_delete=models.CASCADE)
     hair_type = models.ForeignKey(HairType, null=False, on_delete=models.CASCADE)
     pet_name = models.CharField(max_length=25, null=False)
@@ -66,10 +66,6 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f"Invoice for Appointment {self.appointment_id} - Total Amount: ${self.total_amount}"
-
-class AppointmentService(models.Model):
-    appointment_id = models.ForeignKey("Appointment", on_delete=models.CASCADE)
-    service_id = models.ForeignKey("Service", on_delete=models.CASCADE)
 
 class Service(models.Model):
     service_name = models.CharField(max_length=50, null=False)

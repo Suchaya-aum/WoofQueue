@@ -10,8 +10,13 @@ service
 {% endblock %}
 
 {% block content %}
+<a href="{% url 'service_create' %}">
+    <button class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+        Add New Service
+    </button>
+</a>
+<br><br>
 <div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100">
-    <a href="{% url 'service_create' %}"><button>Add New Service</button></a>
     <table class="min-w-full divide-y divide-orange-100">
         <thead class="bg-orange-100 text-left text-sm font-semibold text-gray-700">
             <tr>
@@ -19,6 +24,7 @@ service
                 <th class="px-4 py-3">Duration</th>
                 <th class="px-4 py-3">Price</th>
                 <th class="px-4 py-3">Service Provider</th>
+                <th class="px-4 py-3">Action</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 text-sm">
@@ -29,11 +35,11 @@ service
                 <td class="px-4 py-3">{{ service.price }}</td>
                 <td class="px-4 py-3">{{ service.staff_id.staff_profile.first_name }}</td>
                 <td class="px-4 py-3">
-                    <a href="{% url 'service_update' service.id %}" title="Modify" class="cursor-pointer">
-                        <button>
+                    <button class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+                        <a href="{% url 'service_update' service.id %}" title="Modify" class="cursor-pointer">
                             Edit
-                        </button>
-                    </a>
+                        </a>
+                    </button>
                 </td>
             </tr>
             {% empty %}

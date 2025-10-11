@@ -8,6 +8,7 @@ urlpatterns = [
     path("service/", views.ServiceManagementView.as_view(), name="service"),
     path("service/create", views.ServiceCreateView.as_view(), name="service_create"),
     path("service/update/<int:pk>", views.ServiceUpdateView.as_view(), name="service_update"),
+    path("invoice/", views.InvoiceView.as_view(), name="invoice"),
 
 
 ]
