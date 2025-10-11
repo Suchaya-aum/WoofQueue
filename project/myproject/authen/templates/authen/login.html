@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 text-center">Login</h1>
+
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <!-- {# error รวม (เช่น username/password ไม่ตรง) #} -->
+      {% if login_form.non_field_errors %}
+        <div class="alert alert-danger my-3">
+          {{ login_form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="mb-3">
+        {{ login_form.username.label_tag }}
+        <!-- {# ใช้ฟิลด์จากฟอร์มโดยตรง เพื่อให้ได้ attrs จาก widgets #} -->
+        {{ login_form.username }}
+        {% for e in login_form.username.errors %}
+          <div class="text-danger small mt-1">{{ e }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        {{ login_form.password.label_tag }}
+        {{ login_form.password }}
+        {% for e in login_form.password.errors %}
+          <div class="text-danger small mt-1">{{ e }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="px-5 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600">Login</button>
+      <a href="{% url 'signup' %}" class="px-4 py-2 rounded-lg border">Sign up</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

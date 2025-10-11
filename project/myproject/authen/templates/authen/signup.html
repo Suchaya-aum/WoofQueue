@@ -11,11 +11,10 @@
 
 {% block content %}
   <div class="min-h-screen flex items-center justify-center">
-    <div class="max-w-md w-full bg-white p-6 rounded-xl shadow">
-
+    <div class="max-w-xl w-full bg-white p-8 rounded-xl shadow">
           {% if sign_up_form.non_field_errors %}
         <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {{ sign_up_form.non_field_errors }}
+          {{ c_form.non_field_errors }}
         </div>
       {% endif %}
 
@@ -24,27 +23,43 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-          {{ sign_up_form.username }}
-          {{ sign_up_form.username.errors }}
+          {{ c_form.username }}
+          {{ c_form.username.errors }}
+        </div>
+        {{ p_form.non_field_errors }}
+        <div>
+          <label class="text-sm font-medium text-gray-700">Name</label>
+          <div class="flex gap-2 items-center">
+            {{ p_form.first_name }}
+            {{ p_form.last_name }}
+          </div>
         </div>
 
         <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">phone</label>
+          {{ p_form.phone }}
+          {{ p_form.phone.errors }}
+        </div>
+        
+        <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          {{ sign_up_form.email }}
-          {{ sign_up_form.email.errors }}
+          {{ c_form.email }}
+          {{ c_form.email.errors }}
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          {{ sign_up_form.password1 }}
-          {{ sign_up_form.password1.errors }}
+          {{ c_form.password1 }}
+          {{ c_form.password1.errors }}
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-          {{ sign_up_form.password2 }}
-          {{ sign_up_form.password2.errors }}
+          {{ c_form.password2 }}
+          {{ c_form.password2.errors }}
         </div>
+
+        
 
         <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 active:scale-[.99]">
           Create Account

@@ -9,6 +9,6 @@ urlpatterns = [
     path("service/create", views.ServiceCreateView.as_view(), name="service_create"),
     path("service/update/<int:pk>", views.ServiceUpdateView.as_view(), name="service_update"),
     path("invoice/", views.InvoiceView.as_view(), name="invoice"),
-
-
+    path("appointment/", views.AppointmentView.as_view(), name="appointment"),
+    path("appointment/create_booking/", views.BookingCreateView.as_view(), name="booking_request"),
 ]
