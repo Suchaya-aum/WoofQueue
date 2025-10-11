@@ -8,9 +8,6 @@ from django.db import transaction
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from django.db.models import Q
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-
 class ServiceCreateView(View):
 
     def get(self, request):
@@ -106,6 +103,8 @@ class AppointmentCreateView(LoginRequiredMixin, View):
             return redirect("appointment")
         return render(request, "create_appointment.html", {"appointmentform": form})
 
+        print(service_list[0].staff_id.staff_profile.first_name)
+        return render(request, "service.html", {"service_list": service_list})
 
 # ✅ ลูกค้าและพนักงานเห็นรายการนัดได้ (แต่ filter ต่างกัน)
 class AppointmentView(LoginRequiredMixin, View):
