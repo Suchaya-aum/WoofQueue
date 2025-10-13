@@ -9,10 +9,12 @@ from django.contrib.auth.models import User
 #     email = models.EmailField(null=False)
 
 class CustomerProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=150, null=False)
     last_name = models.CharField(max_length=200, null=False)
     phone = models.CharField(max_length=11, null=True, blank=True)
+    def __str__(self):
+        return f"{self.user}"
 
 class Size(models.Model):
     class SizeChoices(models.TextChoices):
@@ -39,11 +41,13 @@ class HairType(models.Model):
     def __str__(self):
         return f"{self.hair} - {self.price}"
 class Pet(models.Model):
-    owner = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomerProfile, null=False, on_delete=models.CASCADE)
     size = models.ForeignKey(Size, null=False, on_delete=models.CASCADE)
     hair_type = models.ForeignKey(HairType, null=False, on_delete=models.CASCADE)
     pet_name = models.CharField(max_length=25, null=False)
     behavior_note = models.CharField(max_length=255, null=True)
+    def __str__(self):
+        return self.pet_name
 
 class Appointment(models.Model):
     class Status_Choices(models.TextChoices):
@@ -54,7 +58,7 @@ class Appointment(models.Model):
         PICKED_UP = "PU", _("PICKED_UP")
         CANCELLED = "C", _("CANCELLED")
         LATE = "L", _("LATE")
-    pet_id = models.ForeignKey("Pet", on_delete=models.CASCADE)
+    pet = models.ForeignKey("Pet", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     appointment_time = models.DateTimeField()
     finish_time = models.DateTimeField(null=True, blank=True)
@@ -70,7 +74,7 @@ class Invoice(models.Model):
     remark = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"Invoice for Appointment {self.appointment_id.id} - Total: ${self.total_price}"
+        return f"Invoice for Appointment {self.appointment_id.id} - Total: {self.total_price} Baht"
 
 class Service(models.Model):
     service_name = models.CharField(max_length=50, null=False)
@@ -79,7 +83,7 @@ class Service(models.Model):
     staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name="services")
 
     def __str__(self):
-        return f"Service {self.service_name} - {self.duration} minutes - ${self.price} -Staff ID: {self.staff}"
+        return f"{self.service_name} price : {self.price} Baht"
 
 # class Staff(models.Model):
 #     username = models.CharField(max_length=50)
