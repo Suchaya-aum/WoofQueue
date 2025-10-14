@@ -82,8 +82,10 @@ class CustomerProfileForm(forms.ModelForm):
         model = CustomerProfile
         fields = ["first_name", "last_name", "phone"]
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 p-2'}),
-            'last_name':  forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 p-2'}),
+            'first_name': forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 p-2',
+                'placeholder': 'Enter first name'}),
+            'last_name':  forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 p-2',
+                'placeholder': 'Enter last name'}),
             'phone': forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 p-2'}),
         }
 

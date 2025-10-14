@@ -60,6 +60,33 @@ class AppointmentForm(ModelForm):
                 )
 
         return cleaned_data
+class AppointmentBookingForm(ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['pet', 'service', 'appointment_time', 'finish_time']
+        widgets = {
+            'appointment_time': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+            }),
+            'finish_time': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                'readonly': 'readonly',
+            }),
+            'service': forms.SelectMultiple(attrs={
+                'class': 'w-full rounded-lg border-gray-300 p-2 focus:ring-2 focus:ring-blue-400',
+            }),
+            'pet': forms.Select(attrs={
+                'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+            }),
+        }
+
+    def clean_appointment_time(self):
+        appointment_time = self.cleaned_data.get('appointment_time')
+        if appointment_time < timezone.now():
+            raise forms.ValidationError("Appointment time cannot be in the past")
+        return appointment_time
 
 class PetForm(ModelForm):
     class Meta:
@@ -124,29 +151,4 @@ class ServiceForm(ModelForm):
     class Meta:
         model = Service
         fields = "__all__"
-
-class CustomerProfileForm(ModelForm):
-    class Meta:
-        model = CustomerProfile
-        fields = "__all__"
-        exclude = ("user",)
-        widgets = {
-            "first_name": forms.TextInput(
-                attrs={
-                    "class": 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                    'placeholder': 'first name'
-                }),
-            "last_name": forms.TextInput(
-                attrs={
-                    "class": 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                    'placeholder': 'last name'
-                }),
-            "phone": forms.TextInput(
-                attrs={
-                    "class": 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                    'placeholder': '083xxxxxxx'
-                }),
-        }
-
-
 

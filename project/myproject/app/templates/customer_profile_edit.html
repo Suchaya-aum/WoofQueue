@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-6 mt-8 rounded-lg shadow">
+  <h2 class="text-2xl font-bold text-gray-800 mb-4">Edit Profile</h2>
+
+  <!-- แสดง error message ทั้งหมด -->
+  {% if form.errors %}
+    <div class="bg-red-50 border border-red-300 text-red-700 p-4 rounded mb-4">
+      <p class="font-semibold mb-2">Please correct the following errors:</p>
+      <ul class="list-disc list-inside">
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <!-- ฟอร์มโปรไฟล์ -->
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">First Name</label>
+      {{ form.first_name }}
+      {% if form.first_name.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.first_name.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">Last Name</label>
+      {{ form.last_name }}
+      {% if form.last_name.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.last_name.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">Phone</label>
+      {{ form.phone }}
+      {% if form.phone.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.phone.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- ปุ่มบันทึก -->
+    <div class="flex items-center gap-2 mt-4">
+      <button type="submit"
+        onclick="window.location.href='{% url 'appointment' %}'"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
+      Save Changes
+    </button>
+      <a href="{% url 'appointment' %}"
+         class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">
+         Cancel
+      </a>
+    </div>
+  </form>
+
+  <!-- ปุ่มแก้ไขสัตว์เลี้ยง -->
+  <hr class="my-6">
+  <h3 class="text-xl font-semibold text-gray-800 mb-2">Your Pets</h3>
+  {% if pets %}
+    <ul class="divide-y divide-gray-200 mb-4">
+      {% for p in pets %}
+        <li class="py-2 flex justify-between items-center">
+          <div>
+            <p class="font-medium text-gray-800">{{ p.pet_name }}</p>
+            <p class="text-sm text-gray-500">{{ p.size }} / {{ p.hair_type }}</p>
+          </div>
+          <a href="{% url 'pet_edit' p.id %}"
+             class="text-blue-600 hover:text-blue-800 font-semibold">Edit Pet</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-gray-500 mb-4">No pets added yet.</p>
+  {% endif %}
+
+  <a href="{% url 'create_pet' %}"
+     class="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+     ➕ Add New Pet
+  </a>
+</div>
+{% endblock %}

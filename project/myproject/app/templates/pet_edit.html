@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Pet Info{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-6 mt-8 rounded-lg shadow">
+  <h2 class="text-2xl font-bold text-gray-800 mb-4">
+    Edit Pet Information: {{ pet.pet_name }}
+  </h2>
+
+  <!-- แสดง error messages -->
+  {% if form.errors %}
+    <div class="bg-red-50 border border-red-300 text-red-700 p-4 rounded mb-4">
+      <p class="font-semibold mb-2">Please correct the following errors:</p>
+      <ul class="list-disc list-inside">
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <!-- ฟอร์มแก้ไขสัตว์เลี้ยง -->
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">Pet Name</label>
+      {{ form.pet_name }}
+      {% if form.pet_name.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.pet_name.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">Size</label>
+      {{ form.size }}
+      {% if form.size.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.size.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">Hair Type</label>
+      {{ form.hair_type }}
+      {% if form.hair_type.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.hair_type.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">Behavior Note</label>
+      {{ form.behavior_note }}
+      {% if form.behavior_note.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.behavior_note.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- ปุ่มบันทึก -->
+    <div class="flex items-center gap-2 mt-6">
+      <button type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
+        Save Changes
+      </button>
+      <a href="{% url 'customer_profile_edit' %}"
+         class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">
+         Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

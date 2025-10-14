@@ -96,21 +96,41 @@ Appointments
         <!-- Actions (inside the same row) -->
         <td class="px-4 py-3">
           <div class="flex items-center gap-2">
-            <a href="{% url 'appointment_update' a.id %}"
-               class="px-3 py-1 rounded-lg text-sm bg-blue-500 text-white hover:bg-blue-600">
-              Edit
-            </a>
 
+            {% if a.status != 'L' %}
+              <!-- แสดงปุ่ม Late เฉพาะรายการที่ยังไม่ Late -->
+              <form method="post" action="{% url 'booking_update' a.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="L">
+                <button type="submit"
+                        class="px-3 py-1 rounded-lg text-sm bg-yellow-500 text-white hover:bg-yellow-400">
+                  Late
+                </button>
+              </form>
+            {% else %}
+              <!-- ถ้าเป็น Late แล้ว ปล่อยว่าง -->
+
+            {% endif %}
+
+            <!-- ปุ่ม Cancel -->
             <form action="{% url 'appointment_delete' a.id %}" method="post"
                   onsubmit="return confirm('Delete this appointment?');">
               {% csrf_token %}
               <button type="submit"
-                      class="px-3 py-1 rounded-lg text-sm bg-red-500 text-white hover:bg-red-600">
-                Delete
+                      class="px-3 py-1 rounded-lg text-sm bg-red-500 text-white hover:bg-red-400">
+                Cancel
               </button>
             </form>
+
+            <!-- ปุ่ม Edit -->
+             <a href="{% url 'appointment_update' a.id %}"
+              class="px-3 py-1 rounded-lg text-sm bg-blue-500 text-white hover:bg-blue-600 transition">
+              Edit
+            </a>
+
           </div>
         </td>
+
       </tr>
       {% empty %}
       <tr>

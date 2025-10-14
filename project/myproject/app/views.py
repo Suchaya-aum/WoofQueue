@@ -6,6 +6,7 @@ from django.db.models.functions import Concat, TruncDate
 from datetime import datetime, timedelta
 from app.models import *
 from app.forms import *
+from authen.forms import SignUpForm
 from django.utils import timezone
 from django.db import transaction
 from django.db.models import Q
@@ -95,78 +96,45 @@ class AppointmentView(LoginRequiredMixin, View):
 
 
 class BookingCreateView(LoginRequiredMixin, View):
-
-    def _get_profile_and_pets(self, request):
-        profile = get_object_or_404(CustomerProfile, user=request.user)
-        pets_qs = Pet.objects.filter(owner=profile)
-        return profile, pets_qs
-
-    def _apply_service_queryset(self, form):
-        # ปรับตามเงื่อนไขของคุณได้ เช่น filter เฉพาะ service ที่ active
-        form.fields["service"].queryset = Service.objects.all()
-
     def get(self, request):
-        profile, pets_qs = self._get_profile_and_pets(request)
+        # ดึง profile ของ user ที่ล็อกอินอยู่
+        profile = get_object_or_404(CustomerProfile, user=request.user)
+        # pet ที่เป็นของ user นี้
+        pets = Pet.objects.filter(owner=profile)
+        form = AppointmentBookingForm()
+        form.fields['pet'].queryset = pets
+        form.fields['service'].queryset = Service.objects.all()
+        service_list = Service.objects.all()
 
-        booking_form = AppointmentForm()
-        booking_form.fields["pet"].queryset = pets_qs
-        self._apply_service_queryset(booking_form)
-
-        # รองรับ preselect ?service=1&service=3
-        preselect_ids = request.GET.getlist("service")
-        if preselect_ids:
-            booking_form.initial = booking_form.initial or {}
-            booking_form.initial["service"] = preselect_ids
-
-        context = {
-            "booking_form": booking_form,
-            "pet_exist": pets_qs.exists(),
-        }
-        return render(request, 'create_booking.html', context)
+        return render(request, 'create_booking.html', {
+            'booking_form': form,
+            'pet_exist': pets.exists(),
+            'service_list': service_list
+        })
 
     def post(self, request):
-        profile, pets_qs = self._get_profile_and_pets(request)
+        # ดึงข้อมูล customer profile
+        profile = get_object_or_404(CustomerProfile, user=request.user)
 
-        booking_form = AppointmentForm(request.POST)
-        booking_form.fields["pet"].queryset = pets_qs
-        self._apply_service_queryset(booking_form)
+        form = AppointmentBookingForm(request.POST)
+        form.fields['pet'].queryset = Pet.objects.filter(owner=profile)
+        form.fields['service'].queryset = Service.objects.all()
 
-        if booking_form.is_valid():
-            # ยืนยันว่า pet เป็นของผู้ใช้
-            pet = booking_form.cleaned_data.get("pet")
-            if pet is None or pet.owner_id != profile.id:
-                booking_form.add_error("pet", "Invalid pet selection.")
-            else:
-                appointment = booking_form.save(commit=False)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.status = Appointment.Status_Choices.BOOKED
+            appointment.save()
+            form.save_m2m()
 
-                # คำนวณ finish_time จากผลรวม duration ของ service ที่เลือก
-                services = booking_form.cleaned_data.get("service")
-                if services and appointment.appointment_time:
-                    total = services.aggregate(total_time=Sum("duration"))["total_time"] or 0
-                    appointment.finish_time = appointment.appointment_time + timedelta(minutes=total)
+            total_time = appointment.service.aggregate(total_time=Sum("duration"))
+            appointment.finish_time = appointment.appointment_time + timedelta(minutes=total_time["total_time"])
+            appointment.save(update_fields=['finish_time'])
 
-                # ถ้าต้องการผูก customer/profile:
-                # appointment.customer = profile
-
-                appointment.save()
-                booking_form.save_m2m()  # ManyToMany 'service'
-                return redirect("appointment")
-
-        if "save_add" in request.POST:
-            pet_form = PetForm(request.POST)
-            profile = get_object_or_404(CustomerProfile, user=request.user)
-            pet_form.owner = profile
-            if pet_form.is_valid():
-                pet = pet_form.save(commit=False)
-                pet.owner = profile
-                pet.save()
-                return redirect("create_pet")
-
-        context = {
-            "booking_form": booking_form,
-            "pet_exist": pets_qs.exists(),
-        }
-        return render(request, 'create_booking.html', context)
+            return redirect('appointment')
+        return render(request, 'create_booking.html', {
+            'booking_form': form,
+            'pet_exist': True,
+        })
 
 class AppointmentCreateView(LoginRequiredMixin, View):
     # permission_required = 'appointments.add_appointment'
@@ -206,21 +174,42 @@ class PetCreateView(LoginRequiredMixin, View):
             return redirect("booking_request")
         return render(request, "pet_detail.html", {"pet_form": pet_form})
 
-class AppointmentUpdateView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        appointment = get_object_or_404(Appointment, pk=pk)
-        form = AppointmentForm(instance=appointment)
-        return render(request, "update_appointment.html", {"appointmentform": form, "id": pk})
-
+class BookingUpdateView(LoginRequiredMixin, View):
     def post(self, request, pk):
         appointment = get_object_or_404(Appointment, pk=pk)
+        appointment.status = Appointment.Status_Choices.LATE
+        appointment.save(update_fields=["status"])
+
+        return redirect("appointment")
+
+# views.py
+class AppointmentUpdateView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        # ดึงข้อมูลนัดหมายที่จะแก้ไข
+        appointment = get_object_or_404(Appointment, pk=pk)
+        # ฟอร์มแสดงข้อมูลเก่า
+        form = AppointmentForm(instance=appointment)
+        if "service" in form.fields:
+            form.fields["service"].queryset = Service.objects.all()
+
+        return render(request,"update_appointment.html",{"appointmentform": form, "id": pk})
+
+    def post(self, request, pk):
+        # ดึงข้อมูลนัดหมายที่จะแก้ไข
+        appointment = get_object_or_404(Appointment, pk=pk)
+        # สร้างฟอร์มจาก POST + instance เดิม
         form = AppointmentForm(request.POST, instance=appointment)
+        if "service" in form.fields:
+            form.fields["service"].queryset = Service.objects.all()
         if form.is_valid():
             updated = form.save(commit=False)
-            # ตัวอย่าง: ถ้าต้องเก็บคนแก้ไข
-            # updated.updated_by = request.user
+            services = form.cleaned_data.get("service")
+            appointment_time = form.cleaned_data.get("appointment_time") or updated.appointment_time
+            if services and appointment_time:
+                total_duration = services.aggregate(total_time=Sum("duration"))["total_time"] or 0
+                updated.finish_time = appointment_time + timedelta(minutes=total_duration)
             updated.save()
-            form.save_m2m()  # สำคัญ: เนื่องจากมี ManyToMany 'service'
+            form.save_m2m()
             return redirect("appointment")
         return render(request, "update_appointment.html", {"appointmentform": form, "id": pk})
 
@@ -234,6 +223,61 @@ class AppointmentDeleteView(LoginRequiredMixin, View):
         appointment = get_object_or_404(Appointment, pk=pk)
         appointment.delete()
         return redirect("appointment")
+
+class CustomerProfileUpdateView(LoginRequiredMixin, View):
+    def get(self, request):
+        # ดึงโปรไฟล์ของ user ปัจจุบัน
+        profile = get_object_or_404(CustomerProfile, user=request.user)
+        form = CustomerProfileForm(instance=profile)
+        pets = Pet.objects.filter(owner=profile)  # ดึง pet ทั้งหมดของลูกค้าคนนี้
+
+        return render(request, "customer_profile_edit.html", {
+            "form": form,
+            "pets": pets, # ส่ง list ของสัตว์เลี้ยง
+        })
+
+    def post(self, request):
+        profile = get_object_or_404(CustomerProfile, user=request.user)
+        form = CustomerProfileForm(request.POST, instance=profile)
+        pets = Pet.objects.filter(owner=profile)
+
+        if form.is_valid():
+            form.save()
+            return redirect("appointment")
+
+        return render(request, "customer_profile_edit.html", {
+            "form": form,
+            "pets": pets,
+            "pet_exist": pets.exists(),
+        })
+
+class PetUpdateView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        pet = get_object_or_404(Pet, pk=pk, owner__user=request.user)
+        form = PetForm(instance=pet)
+        return render(request, "pet_edit.html", {"form": form, "pet": pet})
+
+    def post(self, request, pk):
+        pet = get_object_or_404(Pet, pk=pk, owner__user=request.user)
+        form = PetForm(request.POST, instance=pet)
+        if form.is_valid():
+            form.save()
+            return redirect("pet_edit", pk=pet.pk)
+        return render(request, "pet_edit.html", {"form": form, "pet": pet})
+
+class ManageCustomerView(LoginRequiredMixin, View):
+    # def test_func(self):
+    #     return self.request.user.is_staff
+
+    def get(self, request):
+        customers = CustomerProfile.objects.select_related("user").all().order_by("id")
+        pets = Pet.objects.select_related("owner").all().order_by("id")
+
+        return render(request, "manage_customer.html", {
+            "customers": customers,
+            "pets": pets,
+        })
+
     
 class NewCustomerView(LoginRequiredMixin, View):
     # permission_required = 'appointments.add_appointment'
