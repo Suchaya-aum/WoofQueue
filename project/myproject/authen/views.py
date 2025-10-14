@@ -3,14 +3,9 @@
 # email : admin@gmail.com
 # password : %r88rqV2]tHc
 
-# staff1/2
-# username : suchaya/sirawit
-# email : suchaya@gmail.com/sirawit@gmail.com
-# password : 6wGU>-5c1<
-
-# user1
-# username : aum
-# email : aum@gmail.com
+# user
+# username : suchaya
+# email : suchaya@gmail.com
 # password : 6wGU>-5c1<
 
 # views.py
