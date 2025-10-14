@@ -1,16 +1,69 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <form method="post">
+{% block title %}
+Create Appointment
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">Create Appointment</h2>
+    </div>
+    <form method="post" action="{% url 'appointment_create' %}">
         {% csrf_token %}
         {{ appointmentform }}
-    <button type="submit">Create Appointment</button>
+        <button class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700" type="submit">
+            Create
+        </button>
     </form>
-</body>
-</html>
+
+{% endblock %}
+{% block script %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const appointmentField = document.getElementById("id_appointment_time");
+            const finishField = document.getElementById("id_finish_time");
+            const serviceField = document.getElementById("id_service");
+
+            function updateFinishTime() {
+                const appointmentValue = appointmentField.value;
+                const selectedOptions = Array.from(serviceField.selectedOptions);
+
+                if (!appointmentValue || selectedOptions.length === 0) {
+                    return;
+                }
+
+                // Parse appointment datetime
+                const startDate = new Date(appointmentValue);
+                if (isNaN(startDate)) return;
+
+                // Extract durations from text (e.g. "Service Full Grooming - 90 minutes - $600.00 - Staff ID: staff1")
+                let totalMinutes = 0;
+                selectedOptions.forEach(opt => {
+                    const match = opt.textContent.match(/(\d+)\s*minutes/);
+                    if (match) totalMinutes += parseInt(match[1]);
+                });
+
+                if (totalMinutes === 0) return;
+
+                // Calculate finish datetime
+                const finishDate = new Date(startDate.getTime() + totalMinutes * 60000);
+
+                // Format correctly for datetime-local input
+                const year = finishDate.getFullYear();
+                const month = String(finishDate.getMonth() + 1).padStart(2, '0');
+                const day = String(finishDate.getDate()).padStart(2, '0');
+                const hours = String(finishDate.getHours()).padStart(2, '0');
+                const minutes = String(finishDate.getMinutes()).padStart(2, '0');
+
+                finishField.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            appointmentField.addEventListener("change", updateFinishTime);
+            serviceField.addEventListener("change", updateFinishTime);
+        });
+    </script>
+{% endblock %}

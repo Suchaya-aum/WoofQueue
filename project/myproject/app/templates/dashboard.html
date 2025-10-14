@@ -1,0 +1,257 @@
+<!-- appointment.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Appointments
+{% endblock %}
+
+{% block head %}
+  <div class="mx-auto text-center mb-4">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Appointments</h1>
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100 p-4">
+
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">Today Appointments</h2>
+    </div>
+
+   <div>
+    
+   </div>
+  <table class="w-full min-w-[900px] divide-y divide-orange-100">
+    <thead class="bg-orange-100 text-left text-sm font-semibold text-gray-700">
+      <tr>
+        <th class="px-4 py-3">Owner</th>
+        <th class="px-4 py-3">Pet Name</th>
+        <th class="px-4 py-3">Appointment Time</th>
+        <th class="px-4 py-3">Finish Time</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3">Services</th>
+    </tr>
+    </thead>
+
+    <tbody class="divide-y divide-gray-100 text-sm">
+        {% for a in appointment_list_today %}
+        <tr class="hover:bg-orange-50 transition">
+            <td class="px-4 py-3 text-gray-700">
+                {{ a.pet_id.owner.username }}
+            </td>
+            <!-- ชื่อสัตว์เลี้ยง -->
+            <td class="px-4 py-3 font-medium text-gray-900">
+                {{ a.pet_id.pet_name }}
+            </td>
+
+            <!-- เวลาเริ่มนัด -->
+            <td class="px-4 py-3 text-gray-700">
+            {{ a.appointment_time|default:"-" }}
+            </td>
+
+            <!-- เวลาจบ -->
+            <td class="px-4 py-3 text-gray-700">
+            {{ a.finish_time|default:"-" }}
+            </td>
+
+            <!-- สถานะ -->
+            <td class="px-4 py-3">
+            <span class="px-2 py-1 rounded-lg text-xs font-semibold
+                {% if a.status == 'B' %} bg-blue-100 text-blue-700
+                {% elif a.status == 'CI' %} bg-indigo-100 text-indigo-700
+                {% elif a.status == 'IP' %} bg-yellow-100 text-yellow-700
+                {% elif a.status == 'D' %} bg-green-100 text-green-700
+                {% elif a.status == 'PU' %} bg-teal-100 text-teal-700
+                {% elif a.status == 'C' %} bg-red-100 text-red-700
+                {% elif a.status == 'L' %} bg-amber-100 text-amber-700
+                {% else %} bg-gray-100 text-gray-600 {% endif %}">
+                {{ a.get_status_display }}
+            </span>
+            </td>
+
+            <!-- รายการบริการ -->
+            <td class="px-4 py-3 text-gray-700">
+                {% for s in a.service.all %}
+                {{ s.service_name }}<br>
+                {% empty %}
+                <span class="text-gray-400 italic">No Service</span>
+                {% endfor %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
+            No appointments found.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+  </table>
+
+</div>
+
+
+
+
+<div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100 p-4">
+
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">Incoming</h2>
+    </div>
+
+   <div>
+    
+   </div>
+  <table class="w-full min-w-[900px] divide-y divide-orange-100">
+    <thead class="bg-orange-100 text-left text-sm font-semibold text-gray-700">
+      <tr>
+        <th class="px-4 py-3">Owner</th>
+        <th class="px-4 py-3">Pet Name</th>
+        <th class="px-4 py-3">Appointment Time</th>
+        <th class="px-4 py-3">Finish Time</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3">Services</th>
+    </tr>
+    </thead>
+
+    <tbody class="divide-y divide-gray-100 text-sm">
+        {% for a in appointment_list_incoming %}
+        <tr class="hover:bg-orange-50 transition">
+            <td class="px-4 py-3 text-gray-700">
+                {{ a.pet_id.owner.username }}
+            </td>
+            <!-- ชื่อสัตว์เลี้ยง -->
+            <td class="px-4 py-3 font-medium text-gray-900">
+                {{ a.pet_id.pet_name }}
+            </td>
+
+            <!-- เวลาเริ่มนัด -->
+            <td class="px-4 py-3 text-gray-700">
+            {{ a.appointment_time|default:"-" }}
+            </td>
+
+            <!-- เวลาจบ -->
+            <td class="px-4 py-3 text-gray-700">
+            {{ a.finish_time|default:"-" }}
+            </td>
+
+            <!-- สถานะ -->
+            <td class="px-4 py-3">
+            <span class="px-2 py-1 rounded-lg text-xs font-semibold
+                {% if a.status == 'B' %} bg-blue-100 text-blue-700
+                {% elif a.status == 'CI' %} bg-indigo-100 text-indigo-700
+                {% elif a.status == 'IP' %} bg-yellow-100 text-yellow-700
+                {% elif a.status == 'D' %} bg-green-100 text-green-700
+                {% elif a.status == 'PU' %} bg-teal-100 text-teal-700
+                {% elif a.status == 'C' %} bg-red-100 text-red-700
+                {% elif a.status == 'L' %} bg-amber-100 text-amber-700
+                {% else %} bg-gray-100 text-gray-600 {% endif %}">
+                {{ a.get_status_display }}
+            </span>
+            </td>
+
+            <!-- รายการบริการ -->
+            <td class="px-4 py-3 text-gray-700">
+                {% for s in a.service.all %}
+                {{ s.service_name }}<br>
+                {% empty %}
+                <span class="text-gray-400 italic">No Service</span>
+                {% endfor %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
+            No appointments found.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+  </table>
+
+</div>
+
+
+
+<div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100 p-4">
+
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-800">History</h2>
+    </div>
+
+   <div>
+    
+   </div>
+  <table class="w-full min-w-[900px] divide-y divide-orange-100">
+    <thead class="bg-orange-100 text-left text-sm font-semibold text-gray-700">
+      <tr>
+        <th class="px-4 py-3">Owner</th>
+        <th class="px-4 py-3">Pet Name</th>
+        <th class="px-4 py-3">Appointment Time</th>
+        <th class="px-4 py-3">Finish Time</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3">Services</th>
+    </tr>
+    </thead>
+
+    <tbody class="divide-y divide-gray-100 text-sm">
+        {% for a in appointment_list %}
+        <tr class="hover:bg-orange-50 transition">
+            <td class="px-4 py-3 text-gray-700">
+                {{ a.pet_id.owner.username }}
+            </td>
+            <!-- ชื่อสัตว์เลี้ยง -->
+            <td class="px-4 py-3 font-medium text-gray-900">
+                {{ a.pet_id.pet_name }}
+            </td>
+
+            <!-- เวลาเริ่มนัด -->
+            <td class="px-4 py-3 text-gray-700">
+            {{ a.appointment_time|default:"-" }}
+            </td>
+
+            <!-- เวลาจบ -->
+            <td class="px-4 py-3 text-gray-700">
+            {{ a.finish_time|default:"-" }}
+            </td>
+
+            <!-- สถานะ -->
+            <td class="px-4 py-3">
+            <span class="px-2 py-1 rounded-lg text-xs font-semibold
+                {% if a.status == 'B' %} bg-blue-100 text-blue-700
+                {% elif a.status == 'CI' %} bg-indigo-100 text-indigo-700
+                {% elif a.status == 'IP' %} bg-yellow-100 text-yellow-700
+                {% elif a.status == 'D' %} bg-green-100 text-green-700
+                {% elif a.status == 'PU' %} bg-teal-100 text-teal-700
+                {% elif a.status == 'C' %} bg-red-100 text-red-700
+                {% elif a.status == 'L' %} bg-amber-100 text-amber-700
+                {% else %} bg-gray-100 text-gray-600 {% endif %}">
+                {{ a.get_status_display }}
+            </span>
+            </td>
+
+            <!-- รายการบริการ -->
+            <td class="px-4 py-3 text-gray-700">
+                {% for s in a.service.all %}
+                {{ s.service_name }}<br>
+                {% empty %}
+                <span class="text-gray-400 italic">No Service</span>
+                {% endfor %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
+            No appointments found.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+  </table>
+
+</div>
+{% endblock %}

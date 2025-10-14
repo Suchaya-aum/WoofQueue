@@ -44,10 +44,10 @@
     {% block nav %}
       <nav class="w-full border-b bg-white">
         <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <a href="/" class="text-xl font-semibold">MySite</a>
+          <a href="{% url 'appointment' %}" class="text-xl font-semibold">MySite</a>
           <div class="flex items-center gap-4">
-            <a href="#" class="text-sm text-gray-600 hover:text-gray-900">Home</a>
-            <a href="#" class="text-sm text-gray-600 hover:text-gray-900">About</a>
+            <a href="{% url 'appointment' %}" class="text-sm text-gray-600 hover:text-gray-900">Home</a>
+            <a href="{% url 'service' %}" class="text-sm text-gray-600 hover:text-gray-900">Services</a>
             <a href="#" class="text-sm text-gray-600 hover:text-gray-900">Contact</a>
           </div>
         </div>

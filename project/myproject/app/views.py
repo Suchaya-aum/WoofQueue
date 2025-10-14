@@ -1,12 +1,21 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from django.db.models import F, Count, Value
+from django.db.models import F, Count, Value, Sum
 from django.db.models.functions import Concat
+from datetime import datetime, timedelta
 from app.models import *
 from app.forms import *
 from django.db import transaction
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
+class DashboardView(View):
+    def get(self, request):
+        appointment_list = Appointment.objects.all().order_by("-appointment_time").filter(appointment_time__date__lt=datetime.datetime.now().date())
+        appointment_list_today = Appointment.objects.all().order_by("-appointment_time").filter(appointment_time__date=datetime.datetime.now().date())
+        appointment_list_incoming = Appointment.objects.all().order_by("-appointment_time").filter(appointment_time__date__gt=datetime.datetime.now().date())
+        return render(request, "dashboard.html", {"appointment_list": appointment_list, "appointment_list_today": appointment_list_today, "appointment_list_incoming": appointment_list_incoming})
+
 
 class ServiceCreateView(View):
 
@@ -95,16 +104,14 @@ class AppointmentCreateView(LoginRequiredMixin, View):
 
     def post(self, request):
         form = AppointmentForm(request.POST)
+        print("Check form")
         if form.is_valid():
-            appointment = form.save(commit=False)
-            appointment.created_by = request.user
+            appointment = form.save()
+            total_time = appointment.service.aggregate(total_time=Sum("duration"))
+            appointment.finish_time = appointment.appointment_time + timedelta(minutes=total_time["total_time"])
             appointment.save()
-            form.save_m2m()
             return redirect("appointment")
         return render(request, "create_appointment.html", {"appointmentform": form})
-
-        print(service_list[0].staff_id.staff_profile.first_name)
-        return render(request, "service.html", {"service_list": service_list})
 
 # ✅ ลูกค้าและพนักงานเห็นรายการนัดได้ (แต่ filter ต่างกัน)
 class AppointmentView(LoginRequiredMixin, View):
@@ -139,20 +146,20 @@ class BookingCreateView(LoginRequiredMixin, View):
         return render(request, "create_booking.html", {"booking_form": booking_form})
 
 
-class AppointmentCreateView(LoginRequiredMixin, View):
-    # permission_required = 'appointments.add_appointment'
-    raise_exception = True
+# class AppointmentCreateView(LoginRequiredMixin, View):
+#     # permission_required = 'appointments.add_appointment'
+#     raise_exception = True
 
-    def get(self, request):
-        form = AppointmentForm()
-        return render(request, "create_appointment.html", {"appointmentform": form})
+#     def get(self, request):
+#         form = AppointmentForm()
+#         return render(request, "create_appointment.html", {"appointmentform": form})
 
-    def post(self, request):
-        form = AppointmentForm(request.POST)
-        if form.is_valid():
-            appointment = form.save(commit=False)
-            appointment.created_by = request.user
-            appointment.save()
-            form.save_m2m()
-            return redirect("appointment")
-        return render(request, "create_appointment.html", {"appointmentform": form})
+#     def post(self, request):
+#         form = AppointmentForm(request.POST)
+#         if form.is_valid():
+#             appointment = form.save(commit=False)
+#             appointment.created_by = request.user
+#             appointment.save()
+#             form.save_m2m()
+#             return redirect("appointment")
+#         return render(request, "create_appointment.html", {"appointmentform": form})

@@ -138,3 +138,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/authen/'
 LOGIN_REDIRECT_URL = '/'           # ล็อกอินสำเร็จให้ไปหน้าไหน
 LOGOUT_REDIRECT_URL = '/'          # ล็อกเอาต์แล้วไปหน้าไหน
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "woofqueqe@gmail.com"
+EMAIL_HOST_PASSWORD = "yxbh tcjv ondh jekz"

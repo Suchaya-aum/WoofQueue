@@ -38,12 +38,16 @@ class HairType(models.Model):
 
     def __str__(self):
         return f"{self.hair} - {self.price}"
+    
 class Pet(models.Model):
     owner = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
     size = models.ForeignKey(Size, null=False, on_delete=models.CASCADE)
     hair_type = models.ForeignKey(HairType, null=False, on_delete=models.CASCADE)
     pet_name = models.CharField(max_length=25, null=False)
     behavior_note = models.CharField(max_length=255, null=True)
+
+    def __str__(self):
+        return f"Pet Name: {self.pet_name}, Owner: {self.owner.first_name} {self.owner.last_name}"
 
 class Appointment(models.Model):
     class Status_Choices(models.TextChoices):

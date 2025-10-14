@@ -28,7 +28,7 @@ invoice
                 <td class="px-4 py-3">{{ invoice.appointment_id.pet_id.owner.first_name }}</td>
                 <td class="px-4 py-3 font-medium">{{ invoice.appointment_id.pet_id.pet_name }}</td>
                 <td class="px-4 py-3">
-                    {% for service in invoice.appointment_id.service_set %}
+                    {% for service in invoice.appointment_id.service_set.all %}
                     {{ service.service_name }}
                     {% endfor %}
                 </td>
