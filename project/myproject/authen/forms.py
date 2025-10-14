@@ -21,10 +21,35 @@ class SignUpForm(UserCreationForm):
         })
     )
 
+    first_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full rounded-lg border border-gray-300 p-2',
+            'placeholder': 'Enter your first name'
+        })
+    )
+
+    last_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full rounded-lg border border-gray-300 p-2',
+            'placeholder': 'Enter your last name'
+        })
+    )
+
+    phone = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full rounded-lg border-gray-300 p-2 focus:ring-2 focus:ring-blue-400',
+            'placeholder': 'Enter 10-digit phone number',
+            'maxlength': '10',
+            'pattern': '[0-9]{10}',
+        })
+    )
     class Meta:
         model = User
         # UserCreationForm มี password1/password2 
-        fields = ["username", "email", "password1", "password2"]
+        fields = ["username", "first_name", "last_name", "email", "password1", "password2"]
         widgets = {
             'username': forms.TextInput(attrs={
                 'class': 'w-full rounded-lg border border-gray-300 p-2',
@@ -33,15 +58,7 @@ class SignUpForm(UserCreationForm):
             'email': forms.EmailInput(attrs={
                 'class': 'w-full rounded-lg border border-gray-300 p-2',
                 'placeholder': 'Enter email'
-            }),
-            'password1': forms.PasswordInput(attrs={
-                'class': 'w-full rounded-lg border border-gray-300 p-2',
-                'placeholder': 'Enter password'
-            }),
-            'password2': forms.PasswordInput(attrs={
-                'class': 'w-full rounded-lg border border-gray-300 p-2',
-                'placeholder': 'Confirm password'
-            }),
+            })
         }
 
 
@@ -55,6 +72,8 @@ class SignUpForm(UserCreationForm):
         # UserCreationForm จะ hash password ให้อัตโนมัติแล้ว
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
         if commit:
             user.save()
         return user
