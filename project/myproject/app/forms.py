@@ -27,7 +27,6 @@ class AppointmentForm(ModelForm):
             raise forms.ValidationError("Appointment time cannot be in the past")
         return appointment_time
 
-<<<<<<< Updated upstream
 class AppointmentBookingForm(ModelForm):
     class Meta:
         model = Appointment
@@ -56,8 +55,6 @@ class AppointmentBookingForm(ModelForm):
             raise forms.ValidationError("Appointment time cannot be in the past")
         return appointment_time
 
-=======
->>>>>>> Stashed changes
 class PetForm(ModelForm):
     class Meta:
         model = Pet
@@ -125,11 +122,7 @@ class ServiceForm(ModelForm):
 class CustomerProfileForm(ModelForm):
     class Meta:
         model = CustomerProfile
-<<<<<<< Updated upstream
         fields = ["first_name", "last_name", "phone"]
-=======
-        fields = "__all__"
->>>>>>> Stashed changes
         widgets = {
             "first_name": forms.TextInput(attrs={
                 "class": "p-2 border border-gray-300 rounded-md w-full",
@@ -142,12 +135,6 @@ class CustomerProfileForm(ModelForm):
             "phone": forms.TextInput(attrs={
                 "class": "p-2 border border-gray-300 rounded-md w-full",
                 "placeholder": "Enter phone number"
-<<<<<<< Updated upstream
-=======
-            }),
-            "user": forms.Select(attrs={
-                "class": "p-2 border border-gray-300 rounded-md w-full"
->>>>>>> Stashed changes
             })
         }
         def clean_phone(self):

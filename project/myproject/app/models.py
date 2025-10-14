@@ -104,8 +104,4 @@ class Service(models.Model):
     staff = models.ForeignKey(Staff_Profile, on_delete=models.CASCADE, related_name="services")
 
     def __str__(self):
-<<<<<<< Updated upstream
         return f"{self.service_name} price : {self.price} Baht"
-=======
-        return f"{self.service_name} price : {self.price} Baht"
->>>>>>> Stashed changes
