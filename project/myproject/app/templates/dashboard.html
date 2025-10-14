@@ -13,6 +13,12 @@ Appointments
 {% endblock %}
 
 {% block content %}
+
+{% if chart %}
+<img src="data:image/png;base64, {{chart|safe}}">
+{% endif %}
+
+
 <div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100 p-4">
 
     <div class="flex justify-between items-center mb-4">
@@ -38,11 +44,11 @@ Appointments
         {% for a in appointment_list_today %}
         <tr class="hover:bg-orange-50 transition">
             <td class="px-4 py-3 text-gray-700">
-                {{ a.pet_id.owner.username }}
+                {{ a.pet.owner.first_name }}
             </td>
             <!-- ชื่อสัตว์เลี้ยง -->
             <td class="px-4 py-3 font-medium text-gray-900">
-                {{ a.pet_id.pet_name }}
+                {{ a.pet.pet_name }}
             </td>
 
             <!-- เวลาเริ่มนัด -->
@@ -120,11 +126,11 @@ Appointments
         {% for a in appointment_list_incoming %}
         <tr class="hover:bg-orange-50 transition">
             <td class="px-4 py-3 text-gray-700">
-                {{ a.pet_id.owner.username }}
+                {{ a.pet.owner.first_name }}
             </td>
             <!-- ชื่อสัตว์เลี้ยง -->
             <td class="px-4 py-3 font-medium text-gray-900">
-                {{ a.pet_id.pet_name }}
+                {{ a.pet.pet_name }}
             </td>
 
             <!-- เวลาเริ่มนัด -->
@@ -201,11 +207,11 @@ Appointments
         {% for a in appointment_list %}
         <tr class="hover:bg-orange-50 transition">
             <td class="px-4 py-3 text-gray-700">
-                {{ a.pet_id.owner.username }}
+                {{ a.pet.owner.first_name }}
             </td>
             <!-- ชื่อสัตว์เลี้ยง -->
             <td class="px-4 py-3 font-medium text-gray-900">
-                {{ a.pet_id.pet_name }}
+                {{ a.pet.pet_name }}
             </td>
 
             <!-- เวลาเริ่มนัด -->

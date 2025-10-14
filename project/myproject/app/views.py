@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.db.models import F, Count, Value, Sum
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat, TruncDate
 from datetime import datetime, timedelta
 from app.models import *
 from app.forms import *
@@ -10,13 +10,25 @@ from django.utils import timezone
 from django.db import transaction
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+import json
+from .utils import get_plot
 
 class DashboardView(View):
     def get(self, request):
+        all_income = []
         appointment_list = Appointment.objects.all().order_by("-appointment_time").filter(appointment_time__date__lt=datetime.datetime.now().date())
         appointment_list_today = Appointment.objects.all().order_by("-appointment_time").filter(appointment_time__date=datetime.datetime.now().date())
         appointment_list_incoming = Appointment.objects.all().order_by("-appointment_time").filter(appointment_time__date__gt=datetime.datetime.now().date())
-        return render(request, "dashboard.html", {"appointment_list": appointment_list, "appointment_list_today": appointment_list_today, "appointment_list_incoming": appointment_list_incoming})
+
+        dates_list = Appointment.objects.annotate(date_only=TruncDate('appointment_time')).order_by('date_only', 'appointment_time').distinct('date_only').filter(date_only__lte=datetime.datetime.now().date()).values("date_only")
+        for d in dates_list:
+            income = Appointment.objects.annotate(date_only=TruncDate('appointment_time'), total_income=Sum("service__price")).filter(date_only=d['date_only']).aggregate(total=Sum("total_income"))
+            all_income.append(income["total"])
+
+        x = [d["date_only"] for d in dates_list]
+        y = [income for income in all_income]
+        chart = get_plot(x, y)
+        return render(request, "dashboard.html", {"appointment_list": appointment_list, "appointment_list_today": appointment_list_today, "appointment_list_incoming": appointment_list_incoming, "chart": chart})
 
 
 class ServiceCreateView(View):
@@ -162,7 +174,8 @@ class AppointmentCreateView(LoginRequiredMixin, View):
 
     def get(self, request):
         form = AppointmentForm()
-        return render(request, "create_appointment.html", {"appointmentform": form})
+        service_list = Service.objects.all()
+        return render(request, "create_appointment.html", {"appointmentform": form, "service_list": service_list})
 
     def post(self, request):
         form = AppointmentForm(request.POST)

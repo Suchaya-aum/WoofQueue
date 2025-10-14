@@ -43,8 +43,14 @@ Create Appointment
                 // Extract durations from text (e.g. "Service Full Grooming - 90 minutes - $600.00 - Staff ID: staff1")
                 let totalMinutes = 0;
                 selectedOptions.forEach(opt => {
-                    const match = opt.textContent.match(/(\d+)\s*minutes/);
-                    if (match) totalMinutes += parseInt(match[1]);
+                    var id = parseInt(opt.value)
+                    {% for service in service_list %}
+                        if(id == {{service.id}}){
+                            totalMinutes = totalMinutes + {{service.duration}}
+                        }
+                    {% endfor %}
+                    // const match = opt.textContent.match(/(\d+)\s*minutes/);
+                    // if (match) totalMinutes += parseInt(match[1]);
                 });
 
                 if (totalMinutes === 0) return;

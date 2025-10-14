@@ -69,8 +69,7 @@ class Appointment(models.Model):
     status = models.CharField(max_length=15, choices=Status_Choices, null=False)
     service = models.ManyToManyField("Service")
 
-    def __str__(self):
-        return f"PET_ID : {self.pet_id} - APPOINTMENT DATE : {self.appointment_time:%Y-%m-%d %H:%M}"
+
 
 class Invoice(models.Model):
     appointment_id = models.ForeignKey(Appointment, on_delete=models.CASCADE)
@@ -80,28 +79,21 @@ class Invoice(models.Model):
     def __str__(self):
         return f"Invoice for Appointment {self.appointment_id.id} - Total: {self.total_price} Baht"
 
-class Service(models.Model):
-    service_name = models.CharField(max_length=50, null=False)
-    duration = models.IntegerField(null=False)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
-    staff = models.ForeignKey(User, on_delete=models.CASCADE, related_name="services")
-
-    def __str__(self):
-        return f"{self.service_name} price : {self.price} Baht"
-
-# class Staff(models.Model):
-#     username = models.CharField(max_length=50)
-#     password = models.CharField(max_length=50)
-#     email = models.CharField(max_length=150)
-
-#     def __str__(self):
-#         return f"Staff {self.username}"
 
 class Staff_Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=150, null=False)
     last_name = models.CharField(max_length=200, null=False)
     phone = models.CharField(max_length=11, null=False)
 
     def __str__(self):
         return f"{self.user.id} Staff Profile {self.first_name} {self.last_name} - Phone: {self.phone}"
+
+class Service(models.Model):
+    service_name = models.CharField(max_length=50, null=False)
+    duration = models.IntegerField(null=False)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
+    staff = models.ForeignKey(Staff_Profile, on_delete=models.CASCADE, related_name="services")
+
+    def __str__(self):
+        return f"{self.service_name} price : {self.price} Baht"
