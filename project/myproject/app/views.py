@@ -6,6 +6,7 @@ from django.db.models.functions import Concat
 from datetime import datetime, timedelta
 from app.models import *
 from app.forms import *
+from django.utils import timezone
 from django.db import transaction
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -88,16 +89,26 @@ class BookingCreateView(LoginRequiredMixin, View):
         pets_qs = Pet.objects.filter(owner=profile)
         return profile, pets_qs
 
+    def _apply_service_queryset(self, form):
+        # ปรับตามเงื่อนไขของคุณได้ เช่น filter เฉพาะ service ที่ active
+        form.fields["service"].queryset = Service.objects.all()
+
     def get(self, request):
         profile, pets_qs = self._get_profile_and_pets(request)
 
         booking_form = AppointmentForm()
-        # ตั้งค่า queryset ให้ฟิลด์ pet ที่นี่เลย
         booking_form.fields["pet"].queryset = pets_qs
+        self._apply_service_queryset(booking_form)
+
+        # รองรับ preselect ?service=1&service=3
+        preselect_ids = request.GET.getlist("service")
+        if preselect_ids:
+            booking_form.initial = booking_form.initial or {}
+            booking_form.initial["service"] = preselect_ids
 
         context = {
             "booking_form": booking_form,
-            "pet_exist": pets_qs.exists(),  # ใช้ใน template ของคุณได้ทันที
+            "pet_exist": pets_qs.exists(),
         }
         return render(request, 'create_booking.html', context)
 
@@ -105,21 +116,30 @@ class BookingCreateView(LoginRequiredMixin, View):
         profile, pets_qs = self._get_profile_and_pets(request)
 
         booking_form = AppointmentForm(request.POST)
-        # ตั้งค่า queryset ให้ฟิลด์ pet ซ้ำใน POST
         booking_form.fields["pet"].queryset = pets_qs
+        self._apply_service_queryset(booking_form)
 
         if booking_form.is_valid():
-            # ป้องกันการโพสต์ค่าปลอม: ตรวจว่า pet เป็นของผู้ใช้จริง
+            # ยืนยันว่า pet เป็นของผู้ใช้
             pet = booking_form.cleaned_data.get("pet")
             if pet is None or pet.owner_id != profile.id:
                 booking_form.add_error("pet", "Invalid pet selection.")
             else:
                 appointment = booking_form.save(commit=False)
-                # ถ้าผูก customer/profile กับ appointment 
+
+                # คำนวณ finish_time จากผลรวม duration ของ service ที่เลือก
+                services = booking_form.cleaned_data.get("service")
+                if services and appointment.appointment_time:
+                    total = services.aggregate(total_time=Sum("duration"))["total_time"] or 0
+                    appointment.finish_time = appointment.appointment_time + timedelta(minutes=total)
+
+                # ถ้าต้องการผูก customer/profile:
                 # appointment.customer = profile
+
                 appointment.save()
-                booking_form.save_m2m()
+                booking_form.save_m2m()  # ManyToMany 'service'
                 return redirect("appointment")
+
         if "save_add" in request.POST:
             pet_form = PetForm(request.POST)
             profile = get_object_or_404(CustomerProfile, user=request.user)
@@ -128,8 +148,7 @@ class BookingCreateView(LoginRequiredMixin, View):
                 pet = pet_form.save(commit=False)
                 pet.owner = profile
                 pet.save()
-                return redirect("create_pet")  # เพิ่มต่ออีกตัว
-
+                return redirect("create_pet")
 
         context = {
             "booking_form": booking_form,
