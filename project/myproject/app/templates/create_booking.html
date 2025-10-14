@@ -1,77 +1,132 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Create Appointment
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
 {% block content %}
-        <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow">
-        <h1 class="text-2xl font-bold mb-4 text-gray-800">Create Appointment</h1>
+<div class="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-4">Create Appointment</h2>
 
-        {% if not pet_exist %}
-            <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 mb-4 rounded">
-            <p>You don't have any pet information yet.</p>
-            <p class="mt-2">Please add your pet before booking an appointment.</p>
-            </div>
-            <a href="{% url 'create_pet' %}" 
-            class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            ➕ Add Pet
-            </a>
-            <a href="{% url 'appointment' %}" 
-            class="inline-block px-4 py-2 ml-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100">
-            Cancel
-            </a>
-        {% else %}
-            <!-- แสดงรายชื่อสัตว์เลี้ยงของเจ้าของ -->
-            <div class="mb-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
-            <h2 class="font-semibold text-gray-700 mb-2">Your Pets</h2>
-            <ul class="list-disc pl-5 text-gray-700">
-                {% for p in booking_form.fields.pet.queryset %}
-                <li>{{ p.pet_name }} - {{ p.size }} / {{ p.hair_type }}</li>
-                {% endfor %}
-            </ul>
-            <a href="{% url 'create_pet' %}" class="mt-2 inline-block text-sm text-blue-600 hover:underline">+ Add another pet</a>
-            </div>
+  {% if not pet_exist %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 mb-4 rounded">
+      <p>You don't have any pet information yet.</p>
+      <p class="mt-2">Please add your pet before booking an appointment.</p>
+    </div>
 
-            <!-- ฟอร์มสร้างนัด -->
-            <form method="post">
-            {% csrf_token %}
-            {{ booking_form.non_field_errors }}
+    <a href="{% url 'create_pet' %}"
+       class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+       ➕ Add Pet
+    </a>
+    <a href="{% url 'appointment' %}"
+       class="inline-block px-4 py-2 ml-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100">
+       Cancel
+    </a>
 
-            <div>
-                <label class="block font-medium text-gray-700 mb-1">{{ booking_form.pet.label }}</label>
-                {{ booking_form.pet }}
-                {{ booking_form.pet.errors }}
-            </div>
+  {% else %}
+    <div class="mb-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+      <h3 class="font-semibold text-gray-700 mb-2">Your Pets</h3>
+      <ul class="list-disc pl-5 text-gray-700">
+        {% for p in booking_form.fields.pet.queryset %}
+          <li>{{ p.pet_name }} - {{ p.size }} / {{ p.hair_type }}</li>
+        {% endfor %}
+      </ul>
+      <a href="{% url 'create_pet' %}" class="mt-2 inline-block text-sm text-blue-600 hover:underline">
+        + Add another pet
+      </a>
+    </div>
 
-            <div>
-                <label class="block font-medium text-gray-700 mb-1">{{ booking_form.appointment_time.label }}</label>
-                {{ booking_form.appointment_time }}
-                {{ booking_form.appointment_time.errors }}
-            </div>
+    <form method="post" action="{% url 'booking_request' %}" class="space-y-4">
+      {% csrf_token %}
 
-            <div>
-                <label class="block font-medium text-gray-700 mb-1">{{ booking_form.finish_time.label }}</label>
-                {{ booking_form.finish_time }}
-                {{ booking_form.finish_time.errors }}
-            </div>
+      <div>
+        <label class="block font-medium text-gray-700 mb-1">{{ booking_form.pet.label }}</label>
+        {{ booking_form.pet }}
+        {{ booking_form.pet.errors }}
+      </div>
 
-            <div>
-                <label class="block font-medium text-gray-700 mb-1">{{ booking_form.status.label }}</label>
-                {{ booking_form.status }}
-                {{ booking_form.status.errors }}
-            </div>
+      <div>
+        <label class="block font-medium text-gray-700 mb-1">{{ booking_form.appointment_time.label }}</label>
+        {{ booking_form.appointment_time }}
+        {{ booking_form.appointment_time.errors }}
+      </div>
 
-            <div>
-                <label class="block font-medium text-gray-700 mb-1">{{ booking_form.service.label }}</label>
-                {{ booking_form.service }}
-                {{ booking_form.service.errors }}
-            </div>
+      <!-- แสดงสถานะ BOOKED เฉย ๆ -->
+      <div>
+        <label class="block font-medium text-gray-700 mb-1">Status</label>
+        <input type="text" value="BOOKED" readonly
+               class="w-full rounded-lg border-gray-300 p-2 bg-gray-100 text-gray-600">
+      </div>
 
-            <div class="flex items-center gap-2 mt-4">
-                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-                Create Appointment
-                </button>
-                <a href="{% url 'appointment' %}" class="px-4 py-2 rounded-lg border">Cancel</a>
-            </div>
-            </form>
-        {% endif %}
-        </div>
-        {% endblock %}
-    </body>
-</html>
+      <div>
+        <label class="block font-medium text-gray-700 mb-1">{{ booking_form.finish_time.label }}</label>
+        {{ booking_form.finish_time }}
+        {{ booking_form.finish_time.errors }}
+      </div>
+
+      <div>
+        <label class="block font-medium text-gray-700 mb-1">{{ booking_form.service.label }}</label>
+        {{ booking_form.service }}
+        {{ booking_form.service.errors }}
+      </div>
+
+      <div class="flex items-center gap-2 mt-4">
+        <button type="submit"
+                class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
+          Create
+        </button>
+        <a href="{% url 'appointment' %}" class="px-4 py-2 rounded-lg border text-gray-700 hover:bg-gray-100">
+          Cancel
+        </a>
+      </div>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const appointmentField = document.getElementById("id_appointment_time");
+  const finishField = document.getElementById("id_finish_time");
+  const serviceField = document.getElementById("id_service");
+
+  function updateFinishTime() {
+    const appointmentValue = appointmentField.value;
+    const selectedOptions = Array.from(serviceField.selectedOptions);
+    if (!appointmentValue || selectedOptions.length === 0) return;
+
+    const startDate = new Date(appointmentValue);
+    if (isNaN(startDate)) return;
+
+    // คำนวณเวลารวมจาก service ที่เลือก
+    let totalMinutes = 0;
+    selectedOptions.forEach(opt => {
+      var id = parseInt(opt.value);
+      {% for service in service_list %}
+        if (id == {{ service.id }}) {
+          totalMinutes += {{ service.duration }};
+        }
+      {% endfor %}
+    });
+
+    if (totalMinutes === 0) return;
+
+    const finishDate = new Date(startDate.getTime() + totalMinutes * 60000);
+    const year = finishDate.getFullYear();
+    const month = String(finishDate.getMonth() + 1).padStart(2, '0');
+    const day = String(finishDate.getDate()).padStart(2, '0');
+    const hours = String(finishDate.getHours()).padStart(2, '0');
+    const minutes = String(finishDate.getMinutes()).padStart(2, '0');
+    finishField.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  appointmentField.addEventListener("change", updateFinishTime);
+  serviceField.addEventListener("change", updateFinishTime);
+});
+</script>
+{% endblock %}

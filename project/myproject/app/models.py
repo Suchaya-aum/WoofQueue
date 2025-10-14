@@ -80,6 +80,14 @@ class Invoice(models.Model):
         return f"Invoice for Appointment {self.appointment_id.id} - Total: {self.total_price} Baht"
 
 
+# class Staff(models.Model):
+#     username = models.CharField(max_length=50)
+#     password = models.CharField(max_length=50)
+#     email = models.CharField(max_length=150)
+
+#     def __str__(self):
+#         return f"Staff {self.username}"
+
 class Staff_Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=150, null=False)
@@ -96,4 +104,8 @@ class Service(models.Model):
     staff = models.ForeignKey(Staff_Profile, on_delete=models.CASCADE, related_name="services")
 
     def __str__(self):
+<<<<<<< Updated upstream
         return f"{self.service_name} price : {self.price} Baht"
+=======
+        return f"{self.service_name} price : {self.price} Baht"
+>>>>>>> Stashed changes

@@ -27,40 +27,37 @@ class AppointmentForm(ModelForm):
             raise forms.ValidationError("Appointment time cannot be in the past")
         return appointment_time
 
-    def clean(self):
-        cleaned_data = super().clean()
-        appoint_time = cleaned_data.get('appointment_time')
-        fin_time = cleaned_data.get('finish_time')
-        pet = cleaned_data.get('pet')
-        # ตรวจเวลาสิ้นสุด
-        if fin_time and appoint_time:
-            if fin_time and appoint_time and fin_time <= appoint_time:
-                raise forms.ValidationError("Finish time must be later than appointment time")
-            elif fin_time and appoint_time and (fin_time - appoint_time) > timedelta(hours=8):
-                raise forms.ValidationError("Appointment cannot exceed 8 hours duration")
-            
-            for s in cleaned_data.get("service"):
-                if Appointment.objects.filter(appointment_time__gte=appoint_time, appointment_time__lte=fin_time, service = s):
-                    self.add_error("finish_time", "Finish time is overlap with other appointment")
-                elif Appointment.objects.filter(finish_time__range=(appoint_time, fin_time), service = s):
-                    self.add_error("appointment_time", "There is other appointment at this time.")
-        # ตรวจเวลาซ้ำในช่วง 1 ชั่วโมง
-        if pet and appoint_time:
-            # ถ้ามี instance อยู่ (ตอน update) ให้ exclude ตัวเองออกจากการเช็ก
-            qs = Appointment.objects.filter(pet=pet)
-            if self.instance.pk:
-                qs = qs.exclude(pk=self.instance.pk)
+<<<<<<< Updated upstream
+class AppointmentBookingForm(ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ['pet', 'service', 'appointment_time', 'finish_time']
+        widgets = {
+            'appointment_time': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+            }),
+            'finish_time': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                'readonly': 'readonly',
+            }),
+            'service': forms.SelectMultiple(attrs={
+                'class': 'w-full rounded-lg border-gray-300 p-2 focus:ring-2 focus:ring-blue-400',
+            }),
+            'pet': forms.Select(attrs={
+                'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+            }),
+        }
 
-            # หา appointment ที่อยู่ในช่วงเวลา +- 1 ชั่วโมง ของเวลานี้
-            overlap_start = appoint_time - timedelta(hours=1)
-            overlap_end = appoint_time + timedelta(hours=1)
-            if qs.filter(appointment_time__range=(overlap_start, overlap_end)).exists():
-                raise forms.ValidationError(
-                    f"This pet already has an appointment within 1 hour of the selected time."
-                )
+    def clean_appointment_time(self):
+        appointment_time = self.cleaned_data.get('appointment_time')
+        if appointment_time < timezone.now():
+            raise forms.ValidationError("Appointment time cannot be in the past")
+        return appointment_time
 
-        return cleaned_data
-
+=======
+>>>>>>> Stashed changes
 class PetForm(ModelForm):
     class Meta:
         model = Pet
@@ -125,3 +122,47 @@ class ServiceForm(ModelForm):
         model = Service
         fields = "__all__"
 
+class CustomerProfileForm(ModelForm):
+    class Meta:
+        model = CustomerProfile
+<<<<<<< Updated upstream
+        fields = ["first_name", "last_name", "phone"]
+=======
+        fields = "__all__"
+>>>>>>> Stashed changes
+        widgets = {
+            "first_name": forms.TextInput(attrs={
+                "class": "p-2 border border-gray-300 rounded-md w-full",
+                "placeholder": "Enter first name"
+            }),
+            "last_name": forms.TextInput(attrs={
+                "class": "p-2 border border-gray-300 rounded-md w-full",
+                "placeholder": "Enter last name"
+            }),
+            "phone": forms.TextInput(attrs={
+                "class": "p-2 border border-gray-300 rounded-md w-full",
+                "placeholder": "Enter phone number"
+<<<<<<< Updated upstream
+=======
+            }),
+            "user": forms.Select(attrs={
+                "class": "p-2 border border-gray-300 rounded-md w-full"
+>>>>>>> Stashed changes
+            })
+        }
+        def clean_phone(self):
+            phone = self.cleaned_data.get("phone")
+            if phone:
+                if not phone.isdigit():
+                    raise ValidationError("Phone number must contain only digits.")
+                if len(phone) != 10:
+                    raise ValidationError("Phone number must be exactly 10 digits.")
+            return phone
+
+        def clean(self):
+            cleaned = super().clean()
+            first = cleaned.get("first_name")
+            last = cleaned.get("last_name")
+            if not first or not last:
+                raise ValidationError("Please fill both first name and last name.")
+            return cleaned

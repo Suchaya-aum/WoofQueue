@@ -13,7 +13,16 @@ urlpatterns = [
     path("appointment/", views.AppointmentView.as_view(), name="appointment"),
     path("appointment/create_booking/", views.BookingCreateView.as_view(), name="booking_request"),
     path("pet/create/", PetCreateView.as_view(), name="create_pet"),
-    path("appointments/<int:pk>/edit/", AppointmentUpdateView.as_view(), name="appointment_update"),
-    path("appointments/<int:pk>/delete/", AppointmentDeleteView.as_view(), name="appointment_delete"),
+    path("appointment/<int:pk>/edit/", AppointmentUpdateView.as_view(), name="appointment_update"),
+    path("appointment/<int:pk>/booking_update/", BookingUpdateView.as_view(), name="booking_update"),
+    path("appointment/<int:pk>/delete/", AppointmentDeleteView.as_view(), name="appointment_delete"),
     path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
+<<<<<<< Updated upstream
+    path('manage/customers/', ManageCustomerView.as_view(), name='manage_customer'),
+    path('customer/edit/', CustomerProfileUpdateView.as_view(), name='customer_profile_edit'),
+    path('pet/<int:pk>/edit/', PetUpdateView.as_view(), name='pet_edit'),
+=======
+    # path('customer/', ManageCustomerView.as_view(), name='manage_customer'),
+    # path("customer/delete/<int:pk>/", CustomerDeleteView.as_view(), name="customer_delete"),
+>>>>>>> Stashed changes
 ]
