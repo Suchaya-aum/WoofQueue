@@ -6,6 +6,7 @@ from .views import *
 
 urlpatterns = [
     path("appointment/create/", views.AppointmentCreateView.as_view(), name="appointment_create"),
+    path("appointment/create/new_customer", views.NewCustomerView.as_view(), name="create_new_customer"),
     path("service/", views.ServiceManagementView.as_view(), name="service"),
     path("service/create", views.ServiceCreateView.as_view(), name="service_create"),
     path("service/update/<int:pk>", views.ServiceUpdateView.as_view(), name="service_update"),

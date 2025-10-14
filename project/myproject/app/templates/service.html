@@ -33,7 +33,7 @@ service
                 <td class="px-4 py-3">{{ service.service_name }}</td>
                 <td class="px-4 py-3 font-medium">{{ service.duration }}</td>
                 <td class="px-4 py-3">{{ service.price }}</td>
-                <td class="px-4 py-3">{{ service.staff_id.staff_profile.first_name }}</td>
+                <td class="px-4 py-3">{{ service.staff.first_name }} {{ service.staff.last_name }}</td>
                 <td class="px-4 py-3">
                     <button class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
                         <a href="{% url 'service_update' service.id %}" title="Modify" class="cursor-pointer">

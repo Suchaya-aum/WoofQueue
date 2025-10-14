@@ -234,3 +234,29 @@ class AppointmentDeleteView(LoginRequiredMixin, View):
         appointment = get_object_or_404(Appointment, pk=pk)
         appointment.delete()
         return redirect("appointment")
+    
+class NewCustomerView(LoginRequiredMixin, View):
+    # permission_required = 'appointments.add_appointment'
+    raise_exception = True
+
+    def get(self, request):
+        customerform = CustomerProfileForm()
+        petform = PetForm()
+        return render(request, "new_customer.html", {"customerform": customerform, "petform": petform})
+
+    def post(self, request):
+        customerform = CustomerProfileForm(request.POST)
+        petform = PetForm(request.POST)
+        try:
+            with transaction.atomic():
+                if customerform.is_valid():
+                    customerProfile = customerform.save()
+                    if petform.is_valid():
+                        pet = petform.save(commit=False)
+                        pet.owner = customerProfile
+                        pet.save()
+                        return redirect("appointment_create")
+                    return redirect("appointment")
+        except Exception as e:
+            raise e
+        return render(request, "new_customer.html", {"customerform": customerform, "petform": petform})

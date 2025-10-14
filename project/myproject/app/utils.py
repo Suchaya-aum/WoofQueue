@@ -18,10 +18,13 @@ def get_plot(x, y):
     plt.switch_backend('AGG')
     plt.figure(figsize=(10, 5))
     plt.title("Incomes per day")
-    plt.plot(x, y)
-    plt.xticks(rotation=45)
+
+    x_labels = [d.strftime('%Y-%m-%d') for d in x]
+
+    plt.plot(x, y, marker='o', linestyle='-', color='steelblue')
     plt.xlabel('date')
     plt.ylabel('price')
+    plt.xticks(rotation=45)
     plt.tight_layout()
     graph = get_graph()
     return graph

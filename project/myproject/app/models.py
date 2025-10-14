@@ -87,7 +87,7 @@ class Staff_Profile(models.Model):
     phone = models.CharField(max_length=11, null=False)
 
     def __str__(self):
-        return f"{self.user.id} Staff Profile {self.first_name} {self.last_name} - Phone: {self.phone}"
+        return f"Staff Profile {self.first_name} {self.last_name} - Phone: {self.phone}"
 
 class Service(models.Model):
     service_name = models.CharField(max_length=50, null=False)
@@ -96,4 +96,4 @@ class Service(models.Model):
     staff = models.ForeignKey(Staff_Profile, on_delete=models.CASCADE, related_name="services")
 
     def __str__(self):
-        return f"{self.service_name} price : {self.price} Baht"
+        return f"{self.service_name} price : {self.price} Baht | Duration: {self.duration} minutes | Staff: {self.staff.first_name} {self.staff.last_name}"

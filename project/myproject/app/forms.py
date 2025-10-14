@@ -40,7 +40,7 @@ class AppointmentForm(ModelForm):
                 raise forms.ValidationError("Appointment cannot exceed 8 hours duration")
             
             for s in cleaned_data.get("service"):
-                if Appointment.objects.filter(appointment_time__gte=appoint_time, appointment_time__lte=fin_time, service = s):
+                if Appointment.objects.filter(appointment_time__gte=appoint_time, appointment_time__lte=fin_time, service__staff = s.staff):
                     self.add_error("finish_time", "Finish time is overlap with other appointment")
                 elif Appointment.objects.filter(finish_time__range=(appoint_time, fin_time), service = s):
                     self.add_error("appointment_time", "There is other appointment at this time.")
@@ -74,7 +74,7 @@ class PetForm(ModelForm):
                 attrs={
                     "class": "p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
                 }),
-            "้hair_type": forms.Select(
+            "hair_type": forms.Select(
                 attrs={
                     "class": "p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
                 }),
@@ -85,7 +85,7 @@ class PetForm(ModelForm):
                 }),
             "behavior_note": forms.Textarea(
                 attrs={
-                    "class": "p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+                    "class": "'block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
                     'rows': 3,
                     'placeholder': 'Describe your pet’s behavior (e.g. friendly, calm, normal)'
                 }),
@@ -124,4 +124,29 @@ class ServiceForm(ModelForm):
     class Meta:
         model = Service
         fields = "__all__"
+
+class CustomerProfileForm(ModelForm):
+    class Meta:
+        model = CustomerProfile
+        fields = "__all__"
+        exclude = ("user",)
+        widgets = {
+            "first_name": forms.TextInput(
+                attrs={
+                    "class": 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                    'placeholder': 'first name'
+                }),
+            "last_name": forms.TextInput(
+                attrs={
+                    "class": 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                    'placeholder': 'last name'
+                }),
+            "phone": forms.TextInput(
+                attrs={
+                    "class": 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                    'placeholder': '083xxxxxxx'
+                }),
+        }
+
+
 

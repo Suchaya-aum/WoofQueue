@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+New Customer
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-lg font-semibold text-gray-800">Create Customer Profile</h2>
+</div>
+<div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100 p-4">
+    <div class="flex justify-between items-center mb-4">
+        <form method="post">
+            {% csrf_token %}
+            {{ customerform }}
+    </div>
+</div>
+<br>
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-lg font-semibold text-gray-800">Pet Info</h2>
+</div>
+<div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100 p-4">
+    <div class="">
+        {{ petform }}
+    </div>
+</div>
+<br>
+<button class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700" type="submit">
+    Create
+</button>
+</form>
+<br><br>
+<a href="{% url 'appointment_create' %}" class="text-blue-600 hover:underline">Back</a>
+
+{% endblock %}
