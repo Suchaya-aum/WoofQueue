@@ -1,4 +1,5 @@
 {% load static %}
+{% load user_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -46,9 +47,17 @@
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <a href="{% url 'appointment' %}" class="text-xl font-semibold">MySite</a>
           <div class="flex items-center gap-4">
-            <a href="{% url 'appointment' %}" class="text-sm text-gray-600 hover:text-gray-900">Home</a>
+            {% if perms.app.add_service %}
+            <a href="{% url 'dashboard' %}" class="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
+            {% endif %}
+            {% if perms.app.view_invoice %}
+            <a href="{% url 'invoice' %}" class="text-sm text-gray-600 hover:text-gray-900">Invoice</a>
+            {% endif %}
+            <a href="{% url 'appointment' %}" class="text-sm text-gray-600 hover:text-gray-900">Home</a>  
             <a href="{% url 'service' %}" class="text-sm text-gray-600 hover:text-gray-900">Services</a>
+            {% if not user|has_group:"Manager"%}
             <a href="{% url 'customer_profile_edit' %}" class="text-sm text-gray-600 hover:text-gray-900">Edit Profile</a>
+            {% endif %}
             <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
           </div>
         </div>

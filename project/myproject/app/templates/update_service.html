@@ -1,16 +1,28 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <form method="post" action="{% url 'service_update' id %}">
-        {% csrf_token %}
-        {{ serviceform }}
-    <button type="submit">Update</button>
-    </form>
-</body>
-</html>
+{% block title %}
+service
+{% endblock %}
+
+{% block head %}
+<p>Services</p>
+{% endblock %}
+
+{% block content %}
+<div class="overflow-x-auto bg-white rounded-lg shadow border border-orange-100 p-6">
+    <div>
+        <form method="post" action="{% url 'service_update' id %}">
+            {% csrf_token %}
+            {{ serviceform }}
+            <button type="submit"
+                class="mt-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Update</button>
+            <button type="button" class="mt-4 ml-2 px-4 py-2 bg-gray-200 text-gray-800 rounded border border-gray-300 hover:bg-gray-300 hover:text-gray-900 transition-colors duration-200">
+                <a href="{% url 'service' %}">
+                    Cancel
+                </a>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

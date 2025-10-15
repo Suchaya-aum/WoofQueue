@@ -48,3 +48,56 @@
         {% endblock %}
     </body>
 </html>
+
+{% block script %}
+ <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const appointmentField = document.getElementById("id_appointment_time");
+            const finishField = document.getElementById("id_finish_time");
+            const serviceField = document.getElementById("id_service");
+
+            function updateFinishTime() {
+                const appointmentValue = appointmentField.value;
+                const selectedOptions = Array.from(serviceField.selectedOptions);
+
+                if (!appointmentValue || selectedOptions.length === 0) {
+                    return;
+                }
+
+                // Parse appointment datetime
+                const startDate = new Date(appointmentValue);
+                if (isNaN(startDate)) return;
+
+                // Extract durations from text (e.g. "Service Full Grooming - 90 minutes - $600.00 - Staff ID: staff1")
+                let totalMinutes = 0;
+                selectedOptions.forEach(opt => {
+                    var id = parseInt(opt.value)
+                    {% for service in service_list %}
+                        if(id == {{service.id}}){
+                            totalMinutes = totalMinutes + {{service.duration}}
+                        }
+                    {% endfor %}
+                    // const match = opt.textContent.match(/(\d+)\s*minutes/);
+                    // if (match) totalMinutes += parseInt(match[1]);
+                });
+
+                if (totalMinutes === 0) return;
+
+                // Calculate finish datetime
+                const finishDate = new Date(startDate.getTime() + totalMinutes * 60000);
+
+                // Format correctly for datetime-local input
+                const year = finishDate.getFullYear();
+                const month = String(finishDate.getMonth() + 1).padStart(2, '0');
+                const day = String(finishDate.getDate()).padStart(2, '0');
+                const hours = String(finishDate.getHours()).padStart(2, '0');
+                const minutes = String(finishDate.getMinutes()).padStart(2, '0');
+
+                finishField.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            appointmentField.addEventListener("change", updateFinishTime);
+            serviceField.addEventListener("change", updateFinishTime);
+        });
+    </script>
+{% endblock %}

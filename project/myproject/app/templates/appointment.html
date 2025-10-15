@@ -1,6 +1,7 @@
 <!-- appointment.html -->
 {% extends 'base.html' %}
 {% load static %}
+{% load user_tags %}
 
 {% block title %}
 Appointments
@@ -18,17 +19,19 @@ Appointments
   <!-- Header + Actions -->
   <div class="flex justify-between items-center mb-4">
     <h2 class="text-lg font-semibold text-gray-800">Appointments</h2>
-
     <div class="flex gap-2">
+      {% if perms.app.add_appointment and perms.app.view_invoice %}
       <a href="{% url 'appointment_create' %}"
          class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">
         Add Appointment
       </a>
-
+      {% endif %}
+      {% if user|has_group:"Customer" %}
       <a href="{% url 'booking_request' %}"
          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
         Create Booking
       </a>
+      {% endif %}
     </div>
   </div>
 
@@ -42,7 +45,9 @@ Appointments
         <th class="px-4 py-3">Finish Time</th>
         <th class="px-4 py-3">Status</th>
         <th class="px-4 py-3">Services</th>
+        {% if perms.app.change_appointment and a.pet.owner == user.customerprofile or user|has_group:"Staff" %}
         <th class="px-4 py-3">Actions</th>
+        {% endif %}
       </tr>
     </thead>
 
@@ -92,8 +97,8 @@ Appointments
             <span class="text-gray-400 italic">No Service</span>
           {% endfor %}
         </td>
-
         <!-- Actions (inside the same row) -->
+        {% if perms.app.change_appointment and a.pet.owner == user.customerprofile or user|has_group:"Staff" %}
         <td class="px-4 py-3">
           <div class="flex items-center gap-2">
 
@@ -130,6 +135,7 @@ Appointments
 
           </div>
         </td>
+        {% endif %}
 
       </tr>
       {% empty %}

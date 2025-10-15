@@ -6,7 +6,7 @@ from django.db.models.functions import Concat, TruncDate
 from datetime import datetime, timedelta
 from app.models import *
 from app.forms import *
-from authen.forms import SignUpForm
+from authen.forms import *
 from django.utils import timezone
 from django.db import transaction
 from django.db.models import Q
@@ -14,7 +14,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 import json
 from .utils import get_plot
 
-class DashboardView(View):
+class DashboardView(PermissionRequiredMixin, View):
+    permission_required = ["app.view_invoice"]
+
     def get(self, request):
         all_income = []
         appointment_list = Appointment.objects.all().order_by("-appointment_time").filter(appointment_time__date__lt=datetime.datetime.now().date())
@@ -32,7 +34,8 @@ class DashboardView(View):
         return render(request, "dashboard.html", {"appointment_list": appointment_list, "appointment_list_today": appointment_list_today, "appointment_list_incoming": appointment_list_incoming, "chart": chart})
 
 
-class ServiceCreateView(View):
+class ServiceCreateView(PermissionRequiredMixin, View):
+    permission_required = ["app.add_service"]
 
     def get(self, request):
         serviceform = ServiceForm()
@@ -46,7 +49,8 @@ class ServiceCreateView(View):
             return redirect("service")
         return render(request, "create_service.html", {"serviceform": serviceform})
     
-class ServiceUpdateView(View):
+class ServiceUpdateView(PermissionRequiredMixin, View):
+    permission_required = ["app.change_service"]
 
     def get(self, request, pk):
         service = Service.objects.get(pk=pk)
@@ -66,19 +70,23 @@ class ServiceUpdateView(View):
         return render(request, "update_service.html", {"serviceform": serviceform, "id": pk})
 
 
-class ServiceManagementView(View):
+class ServiceManagementView(PermissionRequiredMixin, View):
+    permission_required = ["app.view_service"]
+
     def get(self, request):
         service_list = Service.objects.all()
         return render(request, "service.html", {"service_list": service_list})
     
-class InvoiceView(View):
+class InvoiceView(PermissionRequiredMixin, View):
+    permission_required = ["app.view_invoice"]
+
     def get(self, request):
-        invoice_list = Service.objects.all()
+        invoice_list = Invoice.objects.all()
         return render(request, "invoice.html", {"invoice_list": invoice_list})
 
 # ลูกค้าและพนักงานเห็นรายการนัดได้ (แต่ filter ต่างกัน)
-class AppointmentView(LoginRequiredMixin, View):
-    # permission_required = 'appointments.view_appointment'
+class AppointmentView(PermissionRequiredMixin, View):
+    permission_required = ["app.view_appointment"]
     # raise_exception = True  # ถ้าไม่มีสิทธิ์ → 403
 
     def get(self, request):
@@ -95,7 +103,9 @@ class AppointmentView(LoginRequiredMixin, View):
         return render(request, 'appointment.html', {'appointments': qs})
 
 
-class BookingCreateView(LoginRequiredMixin, View):
+class BookingCreateView(PermissionRequiredMixin, View):
+    permission_required = ["app.add_appointment"]
+
     def get(self, request):
         # ดึง profile ของ user ที่ล็อกอินอยู่
         profile = get_object_or_404(CustomerProfile, user=request.user)
@@ -136,9 +146,8 @@ class BookingCreateView(LoginRequiredMixin, View):
             'pet_exist': True,
         })
 
-class AppointmentCreateView(LoginRequiredMixin, View):
-    # permission_required = 'appointments.add_appointment'
-    raise_exception = True
+class AppointmentCreateView(PermissionRequiredMixin, View):
+    permission_required = ['app.add_appointment', 'app.view_invoice']
 
     def get(self, request):
         form = AppointmentForm()
@@ -157,7 +166,9 @@ class AppointmentCreateView(LoginRequiredMixin, View):
         return render(request, "create_appointment.html", {"appointmentform": form})
 
 
-class PetCreateView(LoginRequiredMixin, View):
+class PetCreateView(PermissionRequiredMixin, View):
+    permission_required = ['app.add_pet']
+
     def get(self, request):
         pet_form = PetForm()
         return render(request, "pet_detail.html", {"pet_form": pet_form})
@@ -174,7 +185,9 @@ class PetCreateView(LoginRequiredMixin, View):
             return redirect("booking_request")
         return render(request, "pet_detail.html", {"pet_form": pet_form})
 
-class BookingUpdateView(LoginRequiredMixin, View):
+class BookingUpdateView(PermissionRequiredMixin, View):
+    permission_required = ['app.view_appointment']
+
     def post(self, request, pk):
         appointment = get_object_or_404(Appointment, pk=pk)
         appointment.status = Appointment.Status_Choices.LATE
@@ -183,7 +196,9 @@ class BookingUpdateView(LoginRequiredMixin, View):
         return redirect("appointment")
 
 # views.py
-class AppointmentUpdateView(LoginRequiredMixin, View):
+class AppointmentUpdateView(PermissionRequiredMixin, View):
+    permission_required = ['app.change_appointment']
+
     def get(self, request, pk):
         # ดึงข้อมูลนัดหมายที่จะแก้ไข
         appointment = get_object_or_404(Appointment, pk=pk)
@@ -210,11 +225,18 @@ class AppointmentUpdateView(LoginRequiredMixin, View):
                 updated.finish_time = appointment_time + timedelta(minutes=total_duration)
             updated.save()
             form.save_m2m()
+            if updated.status == "PU":
+                invoice = Invoice.objects.create(appointment_id=Appointment.objects.get(pk=pk), total_price=services.aggregate(total_price=Sum("price"))["total_price"])
+                invoice.save()
+
             return redirect("appointment")
         return render(request, "update_appointment.html", {"appointmentform": form, "id": pk})
 
 
-class AppointmentDeleteView(LoginRequiredMixin, View):
+class AppointmentDeleteView(PermissionRequiredMixin, View):
+    permission_required = ['app.delete_appointment']
+
+
     def get(self, request, pk):
         appointment = get_object_or_404(Appointment, pk=pk)
         return render(request, "confirm_delete_appointment.html", {"appointment": appointment})
@@ -224,7 +246,10 @@ class AppointmentDeleteView(LoginRequiredMixin, View):
         appointment.delete()
         return redirect("appointment")
 
-class CustomerProfileUpdateView(LoginRequiredMixin, View):
+class CustomerProfileUpdateView(PermissionRequiredMixin, View):
+    permission_required = ['app.change_customerprofile']
+
+
     def get(self, request):
         # ดึงโปรไฟล์ของ user ปัจจุบัน
         profile = get_object_or_404(CustomerProfile, user=request.user)
@@ -251,7 +276,10 @@ class CustomerProfileUpdateView(LoginRequiredMixin, View):
             "pet_exist": pets.exists(),
         })
 
-class PetUpdateView(LoginRequiredMixin, View):
+class PetUpdateView(PermissionRequiredMixin, View):
+    permission_required = ['app.change_pet']
+
+
     def get(self, request, pk):
         pet = get_object_or_404(Pet, pk=pk, owner__user=request.user)
         form = PetForm(instance=pet)
@@ -265,7 +293,10 @@ class PetUpdateView(LoginRequiredMixin, View):
             return redirect("pet_edit", pk=pet.pk)
         return render(request, "pet_edit.html", {"form": form, "pet": pet})
 
-class ManageCustomerView(LoginRequiredMixin, View):
+class ManageCustomerView(PermissionRequiredMixin, View):
+    permission_required = ['app.change_customerprofile', 'app.view_invoice']
+
+
     # def test_func(self):
     #     return self.request.user.is_staff
 
@@ -279,8 +310,8 @@ class ManageCustomerView(LoginRequiredMixin, View):
         })
 
     
-class NewCustomerView(LoginRequiredMixin, View):
-    # permission_required = 'appointments.add_appointment'
+class NewCustomerView(PermissionRequiredMixin, View):
+    permission_required = ['app.add_appointment', 'app.view_invoice']
     raise_exception = True
 
     def get(self, request):

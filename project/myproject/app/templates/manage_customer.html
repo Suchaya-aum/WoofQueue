@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-<<<<<<< Updated upstream
 {% block title %}Manage Customers & Pets{% endblock %}
 
 {% block content %}
@@ -15,7 +14,6 @@
         <th class="p-2 border-b">Name</th>
         <th class="p-2 border-b">Phone</th>
         <th class="p-2 border-b">User</th>
-=======
 {% block content %}
 
 <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mt-8">
@@ -54,12 +52,10 @@
         <th class="py-2 px-4 border">First Name</th>
         <th class="py-2 px-4 border">Last Name</th>
         <th class="py-2 px-4 border">Phone</th>
->>>>>>> Stashed changes
       </tr>
     </thead>
     <tbody>
       {% for c in customers %}
-<<<<<<< Updated upstream
         <tr class="hover:bg-gray-50 text-sm">
           <td class="p-2 border-b">{{ forloop.counter }}</td>
           <td class="p-2 border-b">{{ c.first_name }} {{ c.last_name }}</td>
@@ -95,7 +91,6 @@
         </tr>
       {% empty %}
         <tr><td colspan="5" class="text-center p-2 text-gray-500">No pets found.</td></tr>
-=======
       <tr class="hover:bg-gray-50">
         <td class="border px-4 py-2">{{ c.user.username }}</td>
         <td class="border px-4 py-2">{{ c.user.email }}</td>
@@ -103,16 +98,12 @@
         <td class="border px-4 py-2">{{ c.last_name }}</td>
         <td class="border px-4 py-2">{{ c.phone|default:"-" }}</td>
       </tr>
->>>>>>> Stashed changes
       {% endfor %}
     </tbody>
   </table>
 </div>
-<<<<<<< Updated upstream
 {% endblock %}
 </body>
 </html>
-=======
 
 {% endblock %}
->>>>>>> Stashed changes

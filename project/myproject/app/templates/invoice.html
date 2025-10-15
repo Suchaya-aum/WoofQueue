@@ -25,10 +25,10 @@ invoice
         <tbody class="divide-y divide-gray-100 text-sm">
             {% for invoice in invoice_list %}
             <tr class="hover:bg-orange-50 transition">
-                <td class="px-4 py-3">{{ invoice.appointment_id.pet_id.owner.first_name }}</td>
-                <td class="px-4 py-3 font-medium">{{ invoice.appointment_id.pet_id.pet_name }}</td>
+                <td class="px-4 py-3">{{ invoice.appointment_id.pet.owner.first_name }} {{ invoice.appointment_id.pet.owner.last_name }}</td>
+                <td class="px-4 py-3 font-medium">{{ invoice.appointment_id.pet.pet_name }}</td>
                 <td class="px-4 py-3">
-                    {% for service in invoice.appointment_id.service_set.all %}
+                    {% for service in invoice.appointment_id.service.all %}
                     {{ service.service_name }}
                     {% endfor %}
                 </td>
