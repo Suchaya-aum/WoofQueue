@@ -55,7 +55,7 @@
             {% endif %}
             <a href="{% url 'appointment' %}" class="text-sm text-gray-600 hover:text-gray-900">Home</a>  
             <a href="{% url 'service' %}" class="text-sm text-gray-600 hover:text-gray-900">Services</a>
-            {% if not user|has_group:"Manager"%}
+            {% if not user|has_group:"Manager" and not user|has_group:"Staff"%}
             <a href="{% url 'customer_profile_edit' %}" class="text-sm text-gray-600 hover:text-gray-900">Edit Profile</a>
             {% endif %}
             <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
