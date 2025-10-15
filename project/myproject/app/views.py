@@ -91,7 +91,9 @@ class AppointmentView(PermissionRequiredMixin, View):
 
     def get(self, request):
         # JOIN pet และ owner เพื่อลด query ซ้ำ
-        # ใช้ query set
+        # ใช้ query set ดึงข้อมูลที่เกี่ยวข้อง มาพร้อมกันใน query เดียว
+        # .select_related ForeignKey (one-to-one / many-to-one)
+        # .prefetch_related ManyToManyField
         qs = (
             Appointment.objects
             .select_related('pet', 'pet__owner', 'pet__owner__user')
@@ -310,7 +312,7 @@ class ManageCustomerView(PermissionRequiredMixin, View):
             "pets": pets,
         })
 
-    
+
 class NewCustomerView(PermissionRequiredMixin, View):
     permission_required = ['app.add_appointment', 'app.view_invoice']
     raise_exception = True
@@ -336,3 +338,39 @@ class NewCustomerView(PermissionRequiredMixin, View):
         except Exception as e:
             raise e
         return render(request, "new_customer.html", {"customerform": customerform, "petform": petform})
+class CustomerUpdateView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        customer = get_object_or_404(CustomerProfile, pk=pk)
+        form = CustomerProfileForm(instance=customer)
+        return render(request, "update_customer.html", {"form": form, "id": pk})
+
+    def post(self, request, pk):
+        customer = get_object_or_404(CustomerProfile, pk=pk)
+        form = CustomerProfileForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect("manage_customer")
+        return render(request, "update_customer.html", {"form": form, "id": pk})
+
+class CustomerDeleteView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        customer = get_object_or_404(CustomerProfile, pk=pk)
+        customer.delete()
+        return redirect("manage_customer")
+
+
+
+class PetUpdateAdminView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        pet = get_object_or_404(Pet, pk=pk)
+        form = PetForm(instance=pet)
+        return render(request, "update_pet.html", {"form": form, "id": pk})
+
+    def post(self, request, pk):
+        pet = get_object_or_404(Pet, pk=pk)
+        form = PetForm(request.POST, instance=pet)
+        if form.is_valid():
+            form.save()
+            return redirect("manage_customer")
+        return render(request, "update_pet.html", {"form": form, "id": pk})
+

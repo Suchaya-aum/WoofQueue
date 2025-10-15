@@ -69,8 +69,9 @@ class LoginView(View):
             # invalid  render หน้าเดิมพร้อม error
             return render(request, 'authen/login.html', {"login_form": login_form})
 
-
 class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('login')
+
+

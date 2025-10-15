@@ -14,6 +14,7 @@
         <th class="p-2 border-b">Name</th>
         <th class="p-2 border-b">Phone</th>
         <th class="p-2 border-b">User</th>
+=======
 {% block content %}
 
 <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md mt-8">
@@ -52,6 +53,7 @@
         <th class="py-2 px-4 border">First Name</th>
         <th class="py-2 px-4 border">Last Name</th>
         <th class="py-2 px-4 border">Phone</th>
+>>>>>>> Stashed changes
       </tr>
     </thead>
     <tbody>
@@ -61,9 +63,13 @@
           <td class="p-2 border-b">{{ c.first_name }} {{ c.last_name }}</td>
           <td class="p-2 border-b">{{ c.phone }}</td>
           <td class="p-2 border-b">{{ c.user.username }}</td>
+          <td class="p-2 border-b text-center">
+            <a href="{% url 'customer_update' c.id %}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">Edit</a>
+            <a href="{% url 'customer_delete' c.id %}" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs">Delete</a>
+          </td>
         </tr>
       {% empty %}
-        <tr><td colspan="4" class="text-center p-2 text-gray-500">No customers found.</td></tr>
+        <tr><td colspan="5" class="text-center p-2 text-gray-500">No customers found.</td></tr>
       {% endfor %}
     </tbody>
   </table>
@@ -78,6 +84,7 @@
         <th class="p-2 border-b">Size</th>
         <th class="p-2 border-b">Hair Type</th>
         <th class="p-2 border-b">Owner</th>
+        <th class="p-2 border-b text-center">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -88,9 +95,13 @@
           <td class="p-2 border-b">{{ p.size }}</td>
           <td class="p-2 border-b">{{ p.hair_type }}</td>
           <td class="p-2 border-b">{{ p.owner.first_name }} {{ p.owner.last_name }}</td>
+          <td class="p-2 border-b text-center">
+            <a href="{% url 'pet_update_admin' p.id %}" class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">Edit</a>
+          </td>
         </tr>
       {% empty %}
         <tr><td colspan="5" class="text-center p-2 text-gray-500">No pets found.</td></tr>
+=======
       <tr class="hover:bg-gray-50">
         <td class="border px-4 py-2">{{ c.user.username }}</td>
         <td class="border px-4 py-2">{{ c.user.email }}</td>
@@ -98,12 +109,16 @@
         <td class="border px-4 py-2">{{ c.last_name }}</td>
         <td class="border px-4 py-2">{{ c.phone|default:"-" }}</td>
       </tr>
+>>>>>>> Stashed changes
       {% endfor %}
     </tbody>
   </table>
+
 </div>
 {% endblock %}
 </body>
 </html>
+=======
 
 {% endblock %}
+>>>>>>> Stashed changes

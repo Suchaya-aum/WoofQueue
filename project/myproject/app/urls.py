@@ -21,4 +21,8 @@ urlpatterns = [
     path('manage/customers/', ManageCustomerView.as_view(), name='manage_customer'),
     path('customer/edit/', CustomerProfileUpdateView.as_view(), name='customer_profile_edit'),
     path('pet/<int:pk>/edit/', PetUpdateView.as_view(), name='pet_edit'),
+    path("customers/", ManageCustomerView.as_view(), name="manage_customer"),
+    path("customer/<int:pk>/edit/", CustomerUpdateView.as_view(), name="customer_update"),
+    path("customer/<int:pk>/delete/", CustomerDeleteView.as_view(), name="customer_delete"),
+    path("pet/<int:pk>/edit-admin/", PetUpdateAdminView.as_view(), name="pet_update_admin"),
 ]
