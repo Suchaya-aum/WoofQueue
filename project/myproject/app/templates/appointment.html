@@ -45,7 +45,7 @@ Appointments
         <th class="px-4 py-3">Finish Time</th>
         <th class="px-4 py-3">Status</th>
         <th class="px-4 py-3">Services</th>
-        {% if perms.app.change_appointment and a.pet.owner == user.customerprofile or user|has_group:"Staff" %}
+        {% if perms.app.change_appointment and a.pet.owner == user.customerprofile or user|has_group:"Staff" or user|has_group:"Manager" %}
         <th class="px-4 py-3">Actions</th>
         {% endif %}
       </tr>
@@ -116,7 +116,8 @@ Appointments
               <!-- ถ้าเป็น Late แล้ว ปล่อยว่าง -->
 
             {% endif %}
-
+            
+            {% if user|has_group:"Manager" %}
             <!-- ปุ่ม Cancel -->
             <form action="{% url 'appointment_delete' a.id %}" method="post"
                   onsubmit="return confirm('Delete this appointment?');">
@@ -126,6 +127,7 @@ Appointments
                 Cancel
               </button>
             </form>
+            {% endif %}
 
             <!-- ปุ่ม Edit -->
              <a href="{% url 'appointment_update' a.id %}"

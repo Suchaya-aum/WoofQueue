@@ -97,6 +97,7 @@ class AppointmentView(PermissionRequiredMixin, View):
             .select_related('pet', 'pet__owner', 'pet__owner__user')
             .prefetch_related('service')
             .order_by('-id')
+            .filter(~Q(status="PU"))
         )
 
 
@@ -203,7 +204,7 @@ class AppointmentUpdateView(PermissionRequiredMixin, View):
         # ดึงข้อมูลนัดหมายที่จะแก้ไข
         appointment = get_object_or_404(Appointment, pk=pk)
         # ฟอร์มแสดงข้อมูลเก่า
-        form = AppointmentForm(instance=appointment)
+        form = AppointmentUpdateForm(instance=appointment)
         if "service" in form.fields:
             form.fields["service"].queryset = Service.objects.all()
 
@@ -213,7 +214,7 @@ class AppointmentUpdateView(PermissionRequiredMixin, View):
         # ดึงข้อมูลนัดหมายที่จะแก้ไข
         appointment = get_object_or_404(Appointment, pk=pk)
         # สร้างฟอร์มจาก POST + instance เดิม
-        form = AppointmentForm(request.POST, instance=appointment)
+        form = AppointmentUpdateForm(request.POST, instance=appointment)
         if "service" in form.fields:
             form.fields["service"].queryset = Service.objects.all()
         if form.is_valid():
